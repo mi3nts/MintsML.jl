@@ -20,11 +20,11 @@ Get ranked feature importances using the mean absolute Shap value. Returns a sor
 """
 function getFeatureImportances(Xtest, mach, sample_size, min_allowed)
     data_shap = ShapML.shap(
-        explain = Xtest,
+        explain = Xtest[1:300, :],
         model = mach,
         predict_function = predict_function,
         sample_size = sample_size,
-        parallel = :features,
+#        parallel = :features,
         seed=42,
     )
 

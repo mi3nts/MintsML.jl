@@ -3,7 +3,7 @@
 
 Given a path to the TargetsAndFeatures.csv and a desired target variable. Return dataframes with a stratified split with percentage `p` as the training set.
 """
-function makeDatasets(datapath::String, target::Symbol, p::Float64)
+function makeDatasets(datapath::String, target::Symbol) #, p::Float64)
     # load data
     df = CSV.File(joinpath(datapath, "TargetsAndFeatures.csv")) |> DataFrame
     dropmissing!(df)
@@ -14,18 +14,19 @@ function makeDatasets(datapath::String, target::Symbol, p::Float64)
 
     # get rid of any missing
 
-    ignored_for_input = [targets_vars..., ignorecols..., :MSR_705, :rad_MSR_705]
-
+    refs = ["λ_$(i)" for i ∈ 1:462]  # ignore reflectance values since they haven't been helpful
+    ignored_for_input = [refs..., targets_vars..., ignorecols..., :MSR_705, :rad_MSR_705]
 
     # split into dev set and holdout
     df, df_test = partition(data,
-                            p,  # save 10% for inter-model comparisons
+                            .85;
 #                            stratify = data[!,target], # make sure we maintain target distribution
                             rng=42  # set the seed for reproducability
                             )
 
     # now we further split into targets and features
     y, X = unpack(df, ==(target), col -> !(col ∈ ignored_for_input))
+#    yval, Xval= unpack(df_val, ==(target), col -> !(col ∈ ignored_for_input))
     ytest, Xtest = unpack(df_test, ==(target), col -> !(col ∈ ignored_for_input))
 
     # if there's a third column in the targetsDict, set everything below it to 0.0
@@ -35,7 +36,7 @@ function makeDatasets(datapath::String, target::Symbol, p::Float64)
         ytest[ytest .< ymin] .= 0.0
     end
 
-    return (y, X), (ytest, Xtest)
+    return (y, X), (ytest, Xtest) #(yval, Xval), (ytest, Xtest)
 end
 
 

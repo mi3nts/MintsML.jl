@@ -9,7 +9,7 @@ using ProgressMeter
 add_mints_theme()
 theme(:mints)
 # visualize our theme:
-Plots.showtheme(:mints)
+#Plots.showtheme(:mints)
 
 
 include("./config.jl")
@@ -180,6 +180,57 @@ end
 
 
 
+function downwelling_by_target(dfs, target, outpath)
+    # setup outgoing directory
+    if !isdir(joinpath(outpath, String(target)))
+        mkdir(joinpath(outpath, String(target)))
+    end
+
+    # collect the long form of variable names
+    units = targetsDict[target][1]
+    longname = targetsDict[target][2]
+
+    for (key, df) ∈ dfs
+        sort!(df, :CDOM)
+    end
+
+    wavs = ["λ_downwelling_$(i)" for i ∈ 1:size(downwelling_wavelengths, 1)]
+
+    # loop through each df and plot the spectra
+    for (key, df) ∈ dfs
+        # 2. sample reflectance plot
+        cvals = df[!, target]
+        cmin = minimum(cvals)
+        cmax = maximum(cvals)
+
+        cvals = cvals ./ cmax
+        cs = cgrad(:vik, cvals)
+        C = [cs[val] for val ∈ cvals]
+
+        p1 = plot()
+        p2 = scatter([0,0], [0,1], zcolor = [cmin, cmax], xlims=(1,1.1), xticks=:none, yticks=:none, xshowaxis=false, yshowaxis=false, label="", grid=false, colorbar_title="$(longname) [$(units)]")
+
+        for i ∈ 1:100:nrow(df)
+            downwells = Array(df[i, wavs])
+            plot!(p1, downwelling_wavelengths[30:end], downwells[30:end], lw=1, alpha=0.75, color=C[i], label="")
+        end
+        #xlabel!(p1, "λ [nm]")
+        xlabel!(p1, "λ [nm]")
+        ylabel!(p1, "Downwelling Irradiance")
+
+        layout = @layout[a{0.94w} b{0.05w}]
+
+        Pfinal = plot(p1,p2, layout=layout, plot_title="Downwelling Spectra for $(key)")
+
+        savefig(joinpath(outpath, String(target), "downwelling_by_target_$(key).pdf"))
+        savefig(joinpath(outpath, String(target), "downwelling_by_target_$(key).png"))
+    end
+end
+
+
+
+
+
 # ---------------------------------------------------------
 # let's loop through each of the target variables and generate some statistics
 @showprogress for target ∈ targets_vars
@@ -194,6 +245,14 @@ end
     catch e
         println(e)
     end
+
+
+    try
+        downwelling_by_target(dfs, target, outpath)
+    catch e
+        println(e)
+    end
+
 
 end
 make_corr_plots(dfs, outpath)

@@ -41,6 +41,10 @@ end
 
 # do it for 11-23
 datapath = "/media/john/HSDATA/processed/11-23"
+datapath2 = "/media/john/HSDATA/processed/12-09"
+datapath3 = "/media/john/HSDATA/processed/12-10"
 ispath(datapath)
 
-make_datasets(datapath, outpath)
+#make_datasets(datapath, outpath)
+make_datasets(datapath2, outpath)
+make_datasets(datapath3, outpath)
