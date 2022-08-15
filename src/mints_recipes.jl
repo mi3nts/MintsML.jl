@@ -101,7 +101,8 @@ end
     ytest = inputs.args[3]
     ŷtest = inputs.args[4]
 
-
+    ntrain = size(y, 1)
+    ntest = size(ytest, 1)
 
     ky = KernelDensity.kde(y)
     kŷ = KernelDensity.kde(ŷ)
@@ -123,15 +124,20 @@ end
     maxval = maxval + 0.1*δ
 
     # set layout for 3 panels (ignoring top right)
-    layout := @layout [topdensity{0.9w,0.1h}             _
-                       histogram{0.9w,0.9h}   rightdensity{0.1w,0.9h}  ]
+    # layout := @layout [topdensity{0.9w,0.1h}             _
+    #                    histogram{0.9w,0.9h}   rightdensity{0.1w,0.9h}  ]
+
+    layout := @layout [topdensity             _
+                       histogram{0.9w,0.9h}   rightdensity ]
+
 
     legend := :topleft
     xlabel --> "Truth"
     ylabel --> "Prediction"
     xlims --> (minval, maxval)
     ylims --> (minval, maxval)
-
+    top_margin := 0Plots.Measures.mm
+    right_margin := 0Plots.Measures.mm
     # add first series 1:1 line
     @series begin
         seriestype := :path
@@ -150,7 +156,7 @@ end
         ms --> 3
         alpha --> 0.75
         color --> mints_palette[1]
-        label := L"training $R^2 =$ %$(round(r2_train, digits=4))"
+        label := L"Training $\mathrm{R}^{2}=$%$(round(r2_train, digits=3)) (n=%$(ntrain))"
 
         y, ŷ
     end
@@ -160,12 +166,13 @@ end
     @series begin
         seriestype := :scatter
         subplot := 2
-        msws --> 0
+        markershape --> :diamond
+        msw --> 0
         ms --> 3
+        msc --> mints_palette[2]
         alpha --> 0.75
         color --> mints_palette[2]
-        label := L"testing  $R^2 =$ %$(round(r2_test, digits=4))"
-
+        label := L"Testing   $\mathrm{R}^{2}=$%$(round(r2_test, digits=3)) (n=%$(ntest))"
         ytest, ŷtest
     end
 
@@ -176,6 +183,8 @@ end
     ticks := nothing
     xguide := ""
     yguide := ""
+    framestyle := :none
+    bottom_margin := -12.5*Plots.Measures.mm
     @series begin
         seriestype := :density
         subplot := 1
@@ -185,7 +194,9 @@ end
         xlabel := ""
         ylabel := ""
         color --> mints_palette[1]
-
+        fillrange := 0
+        fillalpha := 0.5
+        fillcolor --> mints_palette[1]
         y
     end
 
@@ -198,12 +209,19 @@ end
         xlabel := ""
         ylabel := ""
         color --> mints_palette[2]
+        fillrange := 0
+        fillalpha := 0.5
+        fillcolor --> mints_palette[2]
 
         ytest
     end
 
 
-
+    ticks := nothing
+    xguide := ""
+    yguide := ""
+    framestyle := :none
+    left_margin := -12.5*Plots.Measures.mm
     @series begin
         seriestype := :density
         subplot := 3
@@ -214,6 +232,9 @@ end
         xlabel := ""
         ylabel := ""
         color --> mints_palette[1]
+        fillrange := 0
+        fillalpha := 0.5
+        fillcolor --> mints_palette[1]
 
         ŷ
     end
@@ -228,6 +249,9 @@ end
         xlabel := ""
         ylabel := ""
         color --> mints_palette[2]
+        fillrange := 0
+        fillalpha := 0.5
+        fillcolor --> mints_palette[2]
 
         ŷtest
     end
@@ -316,8 +340,8 @@ end
         xflip --> true
         xticks --> labels
         legend --> false
-        grid := :none
-        minorgrid := :none
+#        grid := :none
+#        minorgrid := :none
         tick_direction := :none
         minorticks := false
         framestyle := :box

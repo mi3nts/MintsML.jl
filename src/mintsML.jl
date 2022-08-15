@@ -452,6 +452,7 @@ function explore_via_rfr(target,
                          ytest,
                          outpath;
                          nfeatures=200,
+                         name_replacements=nothing
                           )
 
 
@@ -551,10 +552,24 @@ function explore_via_rfr(target,
 
     CSV.write(joinpath(outpath_featuresreduced, "importance_ranking.csv"), fi_df)
 
+
+    # create varnames for printing
+    fi_df.plot_name = String.(fi_df.feature_name)
+
+    if name_replacements != nothing
+        for row ∈ eachrow(fi_df)
+            fname = String(row.feature_name)
+            if fname ∈ keys(name_replacements)
+                row.plot_name = name_replacements[fname]
+            end
+        end
+    end
+
+
     if nfeatures > 25
-        pfi = rankimportances(String.(fi_df.feature_name[1:25]), fi_df.rel_importance[1:25]; ylabel="Normalized Mean Decrease in Impurity", title="Ranked Feature Importance", xtickfontsize=7)
+        pfi = rankimportances(fi_df.plot_name[1:25], fi_df.rel_importance[1:25]; ylabel="Normalized Mean Decrease in Impurity", title="Ranked Feature Importance", xtickfontsize=7)
     else
-        pfi = rankimportances(String.(fi_df.feature_name), fi_df.rel_importance; ylabel="Normalized Mean Decrease in Impurity", title="Ranked Feature Importance", xtickfontsize=7)
+        pfi = rankimportances(fi_df.plot_name, fi_df.rel_importance; ylabel="Normalized Mean Decrease in Impurity", title="Ranked Feature Importance", xtickfontsize=7)
     end
 
     savefig(pfi, joinpath(outpath_featuresreduced, "importanc_ranking.png"))
