@@ -2,7 +2,7 @@ using mintsML
 using MLJ
 using DataFrames, CSV
 using ProgressMeter
-
+using SolarGeometry
 
 include("./config.jl")
 include("./utils.jl")
@@ -50,6 +50,22 @@ function make_datasets_full(datapaths, outpath)
 
         (y, X), (ytest, Xtest) = makeFullDatasets(datapaths, target)
 
+        # compute solar azimuth and elevation
+        solar_geo = solar_azimuth_altitude.(X.utc_dt, X.ilat, X.ilon, X.altitude)
+        az_el = hcat(collect.(solar_geo)...)'
+        X.solar_az = az_el[:, 1]
+        X.solar_el = az_el[:, 2]
+
+        solar_geo = solar_azimuth_altitude.(Xtest.utc_dt, Xtest.ilat, Xtest.ilon, Xtest.altitude)
+        az_el = hcat(collect.(solar_geo)...)'
+        Xtest.solar_az = az_el[:, 1]
+        Xtest.solar_el = az_el[:, 2]
+
+        # drop off time, ilat, and ilon from X variables
+        X = X[:, Not([:ilat, :ilon, :utc_dt])]
+        Xtest = Xtest[:, Not([:ilat, :ilon, :utc_dt])]
+
+
         # now we want to save the data.
         CSV.write(joinpath(outpath_base, "X.csv"), X)
         CSV.write(joinpath(outpath_base, "y.csv"), DataFrame(Dict(target => y)))
@@ -59,7 +75,6 @@ function make_datasets_full(datapaths, outpath)
 
         CSV.write(joinpath(outpath_base, "Xtest.csv"), Xtest)
         CSV.write(joinpath(outpath_base, "ytest.csv"), DataFrame(Dict(target => ytest)))
-
     end
 end
 
@@ -80,3 +95,21 @@ datapaths = [datapath, datapath2, datapath3]
 outpath = joinpath(outpath, "Full")
 
 make_datasets_full(datapaths, outpath)
+
+
+# (y,X), (ytest, Xtest) = makeFullDatasets(datapaths, :CDOM)
+
+
+# X1 = X[1, :]
+
+# X1.ilat
+# X1.ilon
+# X1.utc_dt
+# X1.altitude
+
+# saz, salt = solar_azimuth_altitude(X1.utc_dt, X1.ilat, X1.ilon, X1.altitude)
+
+
+# solar_geo = solar_azimuth_altitude.(X.utc_dt, X.ilat, X.ilon, X.altitude)
+# hcat(collect.(solar_geo)...)'
+

@@ -340,6 +340,8 @@ end
         xflip --> true
         xticks --> labels
         legend --> false
+        gridalpha --> 0.25
+        minorgridalpha --> 0.05
 #        grid := :none
 #        minorgrid := :none
         tick_direction := :none

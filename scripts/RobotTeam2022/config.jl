@@ -1,9 +1,9 @@
 ignorecols = [:latitude,
               :longitude,
-              :ilat,
-              :ilon,
+#              :ilat,
+#              :ilon,
               :unix_dt,
-              :utc_dt,
+#              :utc_dt,
               :category,
               :predye_postdye,
               :times,
@@ -87,12 +87,21 @@ downwelling_wavelengths = [339.708, 340.091, 340.474, 340.856, 341.239, 341.622,
 
 name_replacements = Dict()
 for i ∈ 1:size(wavelengths, 1)
+    name_replacements["λ_$(i)"] = "Reflectance at $(wavelengths[i]) nm"
+end
+
+
+for i ∈ 1:size(wavelengths, 1)
     name_replacements["λ_$(i)_rad"] = "Radiance at $(wavelengths[i]) nm"
 end
 
 for i ∈ 1:size(downwelling_wavelengths, 1)
     name_replacements["λ_downwelling_$(i)"] = "Downwelling Irradiance at $(downwelling_wavelengths[i]) nm"
 end
+
+# nice names for solar geometry
+name_replacements["solar_az"] = "Solar Azimuth"
+name_replacements["solar_el"] = "Solar Altitude"
 
 
 # add derived metrics

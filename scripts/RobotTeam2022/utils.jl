@@ -1,3 +1,5 @@
+using SolarGeometry
+
 """
     makeDatasets(datapath::String, target::Symbol)
 
@@ -15,7 +17,8 @@ function makeDatasets(datapath::String, target::Symbol) #, p::Float64)
 
 
     refs = [Symbol("λ_$(i)") for i ∈ 1:462]  # ignore reflectance values since they haven't been helpful
-    ignored_for_input = [refs..., targets_vars..., ignorecols..., :MSR_705, :rad_MSR_705]
+    # ignored_for_input = [refs..., targets_vars..., ignorecols..., :MSR_705, :rad_MSR_705]
+    ignored_for_input = [targets_vars..., ignorecols..., :MSR_705, :rad_MSR_705]
 
     # split into dev set and holdout
     df, df_test = partition(data,
@@ -63,7 +66,8 @@ function makeFullDatasets(datapaths::Array{String}, target::Symbol) #, p::Float6
 
 
     refs = [Symbol("λ_$(i)") for i ∈ 1:462]  # ignore reflectance values since they haven't been helpful
-    ignored_for_input = [refs..., targets_vars..., ignorecols..., :MSR_705, :rad_MSR_705]
+    # ignored_for_input = [refs..., targets_vars..., ignorecols..., :MSR_705, :rad_MSR_705]
+    ignored_for_input = [targets_vars..., ignorecols..., :MSR_705, :rad_MSR_705]
 
 
     # create joined df by vertical concatenation
@@ -71,7 +75,7 @@ function makeFullDatasets(datapaths::Array{String}, target::Symbol) #, p::Float6
 
     # split into dev set and holdout
     df, df_test = partition(data,
-                            .95;
+                            .9;
 #                            stratify = data[!,target], # make sure we maintain target distribution
                             rng=42  # set the seed for reproducability
                             )
