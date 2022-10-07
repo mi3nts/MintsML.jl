@@ -33,8 +33,8 @@ hyper_params = Dict(
                                 (varname=:(model.sampling_fraction), lower=0.7, upper=0.95)
                                 ],
     "XGBoostRegressor" => [(varname=:(model.eta), lower=0.05, upper=0.5),
-                           #(varname=:(model.lambda), lower=0.1, upper=5),  # L2 regularization. Higher makes model more conservative
-                           #(varname=:(model.alpha), lower=0.0, upper=1.0, scale=:log), # L1 regularization. Higher makes model more sparse
+                           (varname=:(model.lambda), lower=0.1, upper=5),  # L2 regularization. Higher makes model more conservative
+                           (varname=:(model.alpha), lower=0.0, upper=1.0, scale=:log), # L1 regularization. Higher makes model more sparse
                            (varname=:(model.max_depth), values=[4,5,6,7,8]),
                            (varname=:(model.num_round), values=[50,100,150]),
                            ]
@@ -372,7 +372,8 @@ function train_vanilla(model_name,
                        y,
                        Xtest,
                        ytest,
-                       outpath
+                       outpath;
+                       featuresreduced=false
                        )
 
     target_name = String(target)
@@ -393,6 +394,17 @@ function train_vanilla(model_name,
         mkdir(outpathdefault)
     end
 
+    outpath_featuresreduced = joinpath(outpathmodel, "important_only")
+    if !isdir(outpath_featuresreduced)
+        mkdir(outpath_featuresreduced)
+    end
+
+    if featuresreduced
+        path_to_use = outpath_featuresreduce
+    else
+        path_to_use = outpathdefault
+    end
+
 
     # instantiate the model
     println("\tInstantiating model: $(model_name)...")
@@ -403,7 +415,7 @@ function train_vanilla(model_name,
     scitype(X) <: input_scitype(mdl)
 
 
-    # define machine with generic hyperparameters and attach to full set of features.
+    # define machine with generic hyperparameters
     println("\ttraining...")
     mach = machine(mdl, X, y)
     fit!(mach)
@@ -414,25 +426,37 @@ function train_vanilla(model_name,
     ŷtest = MLJ.predict(mach, Xtest)  # generate predictions on testing set
 
 
-    p1 = scatterresult(y, ŷ, ytest, ŷtest; plot_title="$(model_name) for $(longname)")
-    savefig(p1, joinpath(outpathdefault, "scatter_result.png"))
-    savefig(p1, joinpath(outpathdefault, "scatter_result.svg"))
-    savefig(p1, joinpath(outpathdefault, "scatter_result.pdf"))
+    p1 = scatterresult(y, ŷ,
+                       ytest, ŷtest;
+                       plot_title="Fit for $(model_name)",
+                       xlabel="True $(longname) [$(units)]",
+                       ylabel="Predicted $(longname) [$(units)]",
+                       )
 
-    p2 = quantilequantile(y, ŷ, ytest, ŷtest; title="$(model_name) plot for $(longname)")
-    savefig(p2, joinpath(outpathdefault, "quantile_quantile.png"))
-    savefig(p2, joinpath(outpathdefault, "quantile_quantile.svg"))
-    savefig(p2, joinpath(outpathdefault, "quantile_quantile.pdf"))
+    savefig(p1, joinpath(path_to_use, "scatterplt.png"))
+    savefig(p1, joinpath(path_to_use, "scatterplt.svg"))
+    savefig(p1, joinpath(path_to_use, "scatterplt.pdf"))
+
+
+    p2 = quantilequantile(y, ŷ,
+                          ytest, ŷtest;
+                          title="Fit for $(model_name)",
+                          xlabel="True $(longname) [$(units)]",
+                          ylabel="Predicted $(longname) [$(units)]"
+                          )
+
+    savefig(p2, joinpath(path_to_use, "quantile_quantile.png"))
+    savefig(p2, joinpath(path_to_use, "quantile_quantile.svg"))
+    savefig(p2, joinpath(path_to_use, "quantile_quantile.pdf"))
 
     # save the model
-
     println("\tsaving output...")
-    MLJ.save(joinpath(outpathdefault, "$(model_name)__default.jls"), mach)
+    MLJ.save(joinpath(path_to_use, "$(model_name)__vanilla.jls"), mach)
 
 
     println("\tdone!")
-    # return the r^2 values so we can add them to our dictionary
-    return r²(ŷ, y), r²(ŷtest, ytest)
+    # return r²(ŷ, y), r²(ŷtest, ytest)
+    return rsq(ŷ, y), rsq(ŷtest, ytest), rmse(ŷtest, ytest), mae(ŷtest, ytest)
 end
 
 

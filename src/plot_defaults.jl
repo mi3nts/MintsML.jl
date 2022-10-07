@@ -24,7 +24,7 @@ function add_mints_theme()
         :gridalpha => 0.4,
         :linewidth => 1.5,
         :markerstrokewidth => 0,
-        :fontfamily => "Computer Modern",
+        # :fontfamily => "Computer Modern",
         :colorgradient => :vik,  # or :turbo for Dr. Lary's preference
         :guidefontsize => 12,
         :titlefontsize => 12,
