@@ -188,6 +188,9 @@ function train_hpo(y, X,
     # mdl = model_loader()
     load_string = "model = @load $(savename) pkg=$(packagename)"
     eval(Meta.parse(load_string))
+
+    println(load_string)
+
     mdl = model()
 
     println("...\t successfully loaded model.")
