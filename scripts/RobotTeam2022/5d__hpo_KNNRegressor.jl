@@ -94,8 +94,7 @@ function main()
 
 
     # try out functions
-    println("Loading DecisionTreeRegressor...")
-    # RFR = @load RandomForestRegressor pkg=DecisionTree verbosity=0
+    println("Loading KNNRegressor...")
     KNNR = @load KNNRegressor pkg=NearestNeighborModels verbosity=0
 
     train_hpo(y, X̃,
