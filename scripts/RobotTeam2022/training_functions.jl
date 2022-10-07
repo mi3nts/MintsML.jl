@@ -138,6 +138,10 @@ hpo_ranges = Dict("DecisionTree" => Dict("DecisionTreeRegressor" => [(hpname=:mi
                                                            (hpname=:num_round, values=[50,100,150]),
                                                            ],
                                     ),
+                  "NearestNeighborModels" => Dict("KNNRegressor" => [(hpname=:K, lower=1, upper=50),
+                                                                     (hpname=:leafsize, lower=1, upper=50),
+                                                                     ],
+                                                  ),
                   "MLJFlux" => Dict("NeuralNetworkRegressor" =>[],
                                     ),
                   )

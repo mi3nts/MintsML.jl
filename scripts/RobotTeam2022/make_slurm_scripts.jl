@@ -45,14 +45,22 @@ end
 #                 )
 
 
+# make_slurm_jobs(;
+#                 script_to_run="5b__hpo_RandomForestRegressor.jl",
+#                 basename="5b__hpo_",
+#                 n_tasks=6,
+# 		            datapath="/scratch/jwaczak/data/datasets/Full",
+# 		            outpath="/scratch/jwaczak/data/analysis_full",
+#                 )
+
+
 make_slurm_jobs(;
-                script_to_run="5b__hpo_RandomForestRegressor.jl",
+                script_to_run="5d__hpo_KNNRegressor.jl",
                 basename="5b__hpo_",
                 n_tasks=6,
 		            datapath="/scratch/jwaczak/data/datasets/Full",
 		            outpath="/scratch/jwaczak/data/analysis_full",
                 )
-
 
 
 
