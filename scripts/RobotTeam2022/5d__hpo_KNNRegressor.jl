@@ -94,12 +94,12 @@ function main()
 
 
     # try out functions
-    println("Loading KNNRegressor...")
-    KNNR = @load KNNRegressor pkg=NearestNeighborModels verbosity=0
+    # println("Loading KNNRegressor...")
+    # KNNR = @load KNNRegressor pkg=NearestNeighborModels verbosity=0
 
     train_hpo(y, X̃,
               ytest, X̃test,
-              "K Nearest Neighbors Regressor", "KNNRegressor", "NearestNeighborModels", KNNR(),
+              "K Nearest Neighbors Regressor", "KNNRegressor", "NearestNeighborModels",
               target_name, units, target_long,
               outpath;
               nmodels = 100

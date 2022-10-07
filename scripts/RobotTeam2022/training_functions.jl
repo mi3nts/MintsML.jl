@@ -152,7 +152,7 @@ hpo_ranges = Dict("DecisionTree" => Dict("DecisionTreeRegressor" => [(hpname=:mi
 
 function train_hpo(y, X,
                    ytest, Xtest,
-                   longname, savename, packagename, mdl,
+                   longname, savename, packagename,
                    target_name, units, target_long,
                    outpath;
                    nmodels = 200
@@ -186,6 +186,11 @@ function train_hpo(y, X,
     # instantiate the model
     println("Instantiating model: $(savename)...")
     # mdl = model_loader()
+    load_string = "model = @load $(savename) pkg=$(packagename)"
+    eval(Meta.parse(load_string))
+    mdl = model()
+
+    println("...\t successfully loaded model.")
 
     rs = []
 
@@ -196,7 +201,6 @@ function train_hpo(y, X,
             push!(rs, range(mdl, item.hpname, lower=item.lower, upper=item.upper))
         end
     end
-
 
 
     println("Performing hyperparameter optimization...")
