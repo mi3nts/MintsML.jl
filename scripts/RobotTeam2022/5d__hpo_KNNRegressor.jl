@@ -51,62 +51,66 @@ function parse_commandline()
 end
 
 
-function main()
-    # parse args making sure that supplied target does exist
-    parsed_args = parse_commandline()
-    target = parsed_args[:target]
-    datapath = parsed_args[:datapath]
-    outpath = parsed_args[:outpath]
 
-    target_name = String(target)
-    target_long = targetsDict[target][2]
-    units = targetsDict[target][1]
+# parse args making sure that supplied target does exist
+parsed_args = parse_commandline()
+target = parsed_args[:target]
+datapath = parsed_args[:datapath]
+outpath = parsed_args[:outpath]
 
-    # now that we've verified the cl args, move on with the script
-    println("Loading packages...")
+target_name = String(target)
+target_long = targetsDict[target][2]
+units = targetsDict[target][1]
 
-    println("Setting random seed for reproducability...")
-    rng = StableRNG(42)
+# now that we've verified the cl args, move on with the script
+println("Loading packages...")
 
-    println("Loading plotting theme...")
-    add_mints_theme()
-    theme(:mints)
+println("Setting random seed for reproducability...")
+rng = StableRNG(42)
 
-    println("Setting compute resources...")
-    # we should grab this from the envrionment variable for number of julia threads
-    MLJ.default_resource(CPUThreads())
+println("Loading plotting theme...")
+add_mints_theme()
+theme(:mints)
 
-
-    println("Loading datasets...")
-    data_path = joinpath(datapath, target_name)
-
-    X = CSV.File(joinpath(data_path, "X.csv")) |> DataFrame
-    y = vec(Array(CSV.File(joinpath(data_path, "y.csv")) |> DataFrame))
-
-    Xtest = CSV.File(joinpath(data_path, "Xtest.csv")) |> DataFrame
-    ytest = vec(Array(CSV.File(joinpath(data_path, "ytest.csv")) |> DataFrame))
-
-    println("Reducing to reflectance + geometry feature set...")
-    others = [:altitude, :pitch, :roll, :heading, :solar_az, :solar_el]
-    refs = [Symbol("λ_$(i)") for i ∈ 1:462]
-    X̃ = X[:, vcat(refs, others)]
-    X̃test = Xtest[:, vcat(refs, others)]
+println("Setting compute resources...")
+# we should grab this from the envrionment variable for number of julia threads
+MLJ.default_resource(CPUThreads())
 
 
-    # try out functions
-    # println("Loading DecisionTreeRegressor...")
-    # DTR = @load DecisionTreeRegressor pkg=DecisionTree verbosity=0
+println("Loading datasets...")
+data_path = joinpath(datapath, target_name)
 
-    train_hpo(y, X̃,
-              ytest, X̃test,
-              "K Nearest Neighbors Regressor", "KNNRegressor", "NearestNeighborModels",
-              target_name, units, target_long,
-              outpath;
-              nmodels = 100
-              )
+X = CSV.File(joinpath(data_path, "X.csv")) |> DataFrame
+y = vec(Array(CSV.File(joinpath(data_path, "y.csv")) |> DataFrame))
+
+Xtest = CSV.File(joinpath(data_path, "Xtest.csv")) |> DataFrame
+ytest = vec(Array(CSV.File(joinpath(data_path, "ytest.csv")) |> DataFrame))
+
+println("Reducing to reflectance + geometry feature set...")
+others = [:altitude, :pitch, :roll, :heading, :solar_az, :solar_el]
+refs = [Symbol("λ_$(i)") for i ∈ 1:462]
+X̃ = X[:, vcat(refs, others)]
+X̃test = Xtest[:, vcat(refs, others)]
+
+
+# try out functions
+# println("Loading DecisionTreeRegressor...")
+# DTR = @load DecisionTreeRegressor pkg=DecisionTree verbosity=0
+
+train_hpo(y, X̃,
+          ytest, X̃test,
+          "K Nearest Neighbors Regressor", "KNNRegressor", "NearestNeighborModels",
+          target_name, units, target_long,
+          outpath;
+          nmodels = 100
+          )
 
 
 
-end
 
-main()
+
+
+# function main()
+# end
+
+# main()
