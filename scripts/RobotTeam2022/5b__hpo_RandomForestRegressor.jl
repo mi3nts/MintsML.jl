@@ -94,12 +94,12 @@ function main()
 
 
     # try out functions
-    println("Loading RandomForestRegressor...")
-    RFR = @load RandomForestRegressor pkg=DecisionTree verbosity=0
+    # println("Loading RandomForestRegressor...")
+    # RFR = @load RandomForestRegressor pkg=DecisionTree verbosity=0
 
     train_hpo(y, X̃,
               ytest, X̃test,
-              "Random Forest Regressor", "RandomForestRegressor", "DecisionTree", RFR(),
+              "Random Forest Regressor", "RandomForestRegressor", "DecisionTree",
               target_name, units, target_long,
               outpath;
               nmodels = 100

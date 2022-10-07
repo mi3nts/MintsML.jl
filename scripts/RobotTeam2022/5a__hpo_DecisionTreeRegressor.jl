@@ -94,12 +94,12 @@ function main()
 
 
     # try out functions
-    println("Loading DecisionTreeRegressor...")
-    DTR = @load DecisionTreeRegressor pkg=DecisionTree verbosity=0
+    # println("Loading DecisionTreeRegressor...")
+    # DTR = @load DecisionTreeRegressor pkg=DecisionTree verbosity=0
 
     train_hpo(y, X̃,
               ytest, X̃test,
-              "Decision Tree Regressor", "DecisionTreeRegressor", "DecisionTree", DTR(),
+              "Decision Tree Regressor", "DecisionTreeRegressor", "DecisionTree",
               target_name, units, target_long,
               outpath;
               nmodels = 500
