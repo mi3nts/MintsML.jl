@@ -152,7 +152,7 @@ hpo_ranges = Dict("DecisionTree" => Dict("DecisionTreeRegressor" => [(hpname=:mi
 
 function train_hpo(y, X,
                    ytest, Xtest,
-                   longname, savename, packagename, model_loader,
+                   longname, savename, packagename, mdl,
                    target_name, units, target_long,
                    outpath;
                    nmodels = 200
@@ -185,7 +185,8 @@ function train_hpo(y, X,
 
     # instantiate the model
     println("Instantiating model: $(savename)...")
-    mdl = model_loader()
+    # mdl = model_loader()
+
     rs = []
 
     for item ∈ hpo_ranges[packagename][savename]

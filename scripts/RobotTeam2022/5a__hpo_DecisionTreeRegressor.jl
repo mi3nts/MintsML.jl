@@ -99,7 +99,7 @@ function main()
 
     train_hpo(y, X̃,
               ytest, X̃test,
-              "Decision Tree Regressor", "DecisionTreeRegressor", "DecisionTree", DTR,
+              "Decision Tree Regressor", "DecisionTreeRegressor", "DecisionTree", DTR(),
               target_name, units, target_long,
               outpath;
               nmodels = 500

@@ -100,7 +100,7 @@ function main()
 
     train_hpo(y, X̃,
               ytest, X̃test,
-              "K Nearest Neighbors Regressor", "KNNRegressor", "NearestNeighborModels", KNNR,
+              "K Nearest Neighbors Regressor", "KNNRegressor", "NearestNeighborModels", KNNR(),
               target_name, units, target_long,
               outpath;
               nmodels = 100
