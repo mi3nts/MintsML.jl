@@ -103,7 +103,7 @@ function main()
               "K Nearest Neighbors Regressor", "KNNRegressor", "NearestNeighborModels", KNNR,
               target_name, units, target_long,
               outpath;
-              nmodels = 500
+              nmodels = 100
               )
 
 
