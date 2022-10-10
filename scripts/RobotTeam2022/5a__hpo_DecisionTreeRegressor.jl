@@ -51,7 +51,7 @@ function parse_commandline()
 end
 
 
-function main()
+function main(mdl)
     # parse args making sure that supplied target does exist
     parsed_args = parse_commandline()
     target = parsed_args[:target]
@@ -99,7 +99,7 @@ function main()
 
     train_hpo(y, X̃,
               ytest, X̃test,
-              "Decision Tree Regressor", "DecisionTreeRegressor", "DecisionTree",
+              "Decision Tree Regressor", "DecisionTreeRegressor", "DecisionTree", mdl,
               target_name, units, target_long,
               outpath;
               nmodels = 500
@@ -109,4 +109,7 @@ function main()
 
 end
 
-main()
+
+model = @load DecisionTreeRegressor pkg=DecisionTree
+mdl = model()
+main(mdl)
