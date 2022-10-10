@@ -107,7 +107,6 @@ function main(mdl)
               )
 end
 
-
 model = @load KNNRegressor pkg=NearestNeighborModels
 mdl = model()
 
