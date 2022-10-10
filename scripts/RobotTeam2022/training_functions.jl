@@ -118,6 +118,9 @@ end
 
 # define dictionary with default hyperparameter values used for tuning for each model
 # use a dict of dicts structure
+
+# https://www.kaggle.com/code/prashant111/a-guide-on-xgboost-hyperparameters-tuning/notebook
+
 hpo_ranges = Dict("DecisionTree" => Dict("DecisionTreeRegressor" => [(hpname=:min_samples_leaf, lower=2, upper=100),
                                                                    #   (hpname=:n_subfeatures, values=[-1,0]),
                                                                       (hpname=:max_depth, values=[-1, 2, 3, 5, 10, 20]),
@@ -131,11 +134,14 @@ hpo_ranges = Dict("DecisionTree" => Dict("DecisionTreeRegressor" => [(hpname=:mi
                                                                       (hpname=:sampling_fraction, lower=0.5, upper=0.95)
                                                                       ],
                                           ),
-                  "XGBoost" => Dict("XGBoostRegressor" => [(hpname=:eta, lower=0.05, upper=0.5),
-                                                           (hpname=:lambda, lower=0.1, upper=5),  # L2 regularization. Higher makes model more conservative
-                                                           (hpname=:alpha, lower=0.0, upper=1.0, scale=:log), # L1 regularization. Higher makes model more sparse
-                                                           (hpname=:max_depth, values=[4,5,6,7,8]),
-                                                           (hpname=:num_round, values=[50,100,150]),
+                  "XGBoost" => Dict("XGBoostRegressor" => [(hpname=:eta, lower=0.01, upper=0.2),
+                                                           (hpname=:gamma, lower=0, upper=100),  # not sure about this one
+                                                           (hpname=:max_depth, lower=3, upper=10),
+                                                           (hpname=:min_child_weight, lower=0.0, upper=5.0),
+                                                           (hpname=:max_delta_step, lower=1.0, upper=10.0),
+                                                           (hpname=:subsample, lower=0.5, upper=1.0),
+                                                           (hpname=:lambda, lower=0.1, upper=5.0),  # L2 regularization. Higher makes model more conservative
+                                                           (hpname=:alpha, lower=0.0, upper=1.0), # L1 regularization. Higher makes model more sparse
                                                            ],
                                     ),
                   "NearestNeighborModels" => Dict("KNNRegressor" => [(hpname=:K, lower=1, upper=50),
@@ -182,17 +188,6 @@ function train_hpo(y, X,
     end
 
     path_to_use = outpath_hpo
-
-    # instantiate the model
-    println("Instantiating model: $(savename)...")
-    # mdl = model_loader()
-    # load_string = "using $(packagename)"
-    # eval(Meta.parse(load_string))
-    # load_string = "model = @load $(savename) pkg=$(packagename)"
-    # eval(Meta.parse(load_string))
-    # mdl = model()
-
-    println("...\t successfully loaded model.")
 
     rs = []
 
