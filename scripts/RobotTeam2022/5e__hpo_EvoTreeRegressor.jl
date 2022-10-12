@@ -78,7 +78,7 @@ function main(mdl)
 
     println("Setting compute resources...")
     # we should grab this from the envrionment variable for number of julia threads
-    MLJ.default_resource(CPUThreads())
+    # MLJ.default_resource(CPUThreads())
 
 
     println("Loading datasets...")

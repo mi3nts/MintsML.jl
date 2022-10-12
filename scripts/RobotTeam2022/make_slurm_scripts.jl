@@ -17,7 +17,7 @@ function make_slurm_jobs(;script_to_run="5a__hpo_DecisionTreeRegressor.jl", base
         #SBATCH     --ntasks=1
         #SBATCH     --cpus-per-task=$(n_tasks)   # number of threads for multi-threading
         #SBATCH     --time=2-00:00:00
-        #SBATCH     --mem=25G
+        #SBATCH     --mem=30G
         #SBATCH     --mail-type=ALL
         #SBATCH     --mail-user=jxw190004@utdallas.edu
         #SBATCH     --partition=normal
@@ -75,7 +75,7 @@ end
 make_slurm_jobs(;
                 script_to_run="5e__hpo_EvoTreeRegressor.jl",
                 basename="5e_hpo_",
-                n_tasks=1,
+                n_tasks=2,
 		            datapath="/scratch/jwaczak/data/datasets/Full",
 		            outpath="/scratch/jwaczak/data/analysis_full",
                 )
