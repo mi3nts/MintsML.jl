@@ -99,7 +99,7 @@ function main(mdl)
 
     train_hpo(y, X̃,
               ytest, X̃test,
-              "XGBoost Regressor", "XGBoostRegressor", "XGBoost", mdl,
+              "EvoTree Regressor", "EvoTreeRegressor", "EvoTrees", mdl,
               target_name, units, target_long,
               outpath;
               nmodels = 500
