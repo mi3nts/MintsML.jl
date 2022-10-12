@@ -144,12 +144,21 @@ hpo_ranges = Dict("DecisionTree" => Dict("DecisionTreeRegressor" => [(hpname=:mi
                                                            (hpname=:alpha, lower=0.0, upper=1.0), # L1 regularization. Higher makes model more sparse
                                                            ],
                                     ),
+                  "EvoTrees" => Dict("EvoTreeRegressor" => [(hpname=:nrounds, lower=10, upper=100),
+                                                            (hpname=:eta, lower=0.01, upper=0.2),
+                                                            (hpname=:gamma, lower=0, upper=100),  # not sure about this one
+                                                            (hpname=:max_depth, lower=3, upper=10),
+                                                            (hpname=:min_weight, lower=0.0, upper=5.0),
+                                                            (hpname=:lambda, lower=0.1, upper=5.0),  # L2 regularization. Higher makes model more conservative
+                                                            (hpname=:alpha, lower=0.0, upper=1.0), # L1 regularization. Higher makes model more sparse
+                                                            ],
+                                     ),
                   "NearestNeighborModels" => Dict("KNNRegressor" => [(hpname=:K, lower=1, upper=50),
                                                                      (hpname=:leafsize, lower=1, upper=50),
                                                                      ],
                                                   ),
                   "MLJFlux" => Dict("NeuralNetworkRegressor" =>[],
-                                    ),
+                                    ), 
                   )
 
 
