@@ -130,7 +130,7 @@ hpo_ranges = Dict("DecisionTree" => Dict("DecisionTreeRegressor" => [(hpname=:mi
                                                                    #  (hpname=:min_samples_leaf, lower=2, upper=100),
                                                                    #  (hpname=:max_depth, values=[-1, 2, 3, 5, 10, 20]),
                                                                       (hpname=:n_subfeatures, values=[-1,0]),
-                                                                      (hpname=:n_trees, lower=10, upper=250),
+                                                                      (hpname=:n_trees, lower=10, upper=100),
                                                                       (hpname=:sampling_fraction, lower=0.5, upper=0.95)
                                                                       ],
                                           ),
