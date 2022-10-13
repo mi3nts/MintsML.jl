@@ -78,7 +78,7 @@ function main(mdl)
 
     println("Setting compute resources...")
     # we should grab this from the envrionment variable for number of julia threads
-    MLJ.default_resource(CPUThreads())
+    # MLJ.default_resource(CPUThreads())
 
 
     println("Loading datasets...")
@@ -102,7 +102,8 @@ function main(mdl)
               "Random Forest Regressor", "RandomForestRegressor", "DecisionTree", mdl,
               target_name, units, target_long,
               outpath;
-              nmodels = 200
+              nmodels = 200,
+              accelerate=false
               )
 
 

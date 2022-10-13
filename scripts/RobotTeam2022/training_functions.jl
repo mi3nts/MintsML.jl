@@ -170,7 +170,8 @@ function train_hpo(y, X,
                    longname, savename, packagename, mdl,
                    target_name, units, target_long,
                    outpath;
-                   nmodels = 200
+                   nmodels = 200,
+                   accelerate = true,
                    )
 
     suffix = "hpo"
@@ -214,16 +215,30 @@ function train_hpo(y, X,
 
     tuning = RandomSearch(rng=rng)
 
-    tuning_pipe = TunedModel(
-        model=mdl,
-        range=rs,
-        tuning=tuning,
-        measures=[mae, rsq, rms],  #first is used for the optimization but all are stored
-        resampling=CV(nfolds=6, rng=rng), # this does ~ 85:15 split 6 times
-        #resampling=Holdout(fraction_train=0.85, shuffle=true),
-        acceleration=CPUThreads(),
-        n=nmodels # define the total number of models to try
-    )
+    if accelerate
+        tuning_pipe = TunedModel(
+            model=mdl,
+            range=rs,
+            tuning=tuning,
+            measures=[mae, rsq, rms],  #first is used for the optimization but all are stored
+            resampling=CV(nfolds=6, rng=rng), # this does ~ 85:15 split 6 times
+            #resampling=Holdout(fraction_train=0.85, shuffle=true),
+            acceleration=CPUThreads(),
+            n=nmodels # define the total number of models to try
+        )
+    else
+        tuning_pipe = TunedModel(
+            model=mdl,
+            range=rs,
+            tuning=tuning,
+            measures=[mae, rsq, rms],  #first is used for the optimization but all are stored
+            resampling=CV(nfolds=6, rng=rng), # this does ~ 85:15 split 6 times
+            # resampling=Holdout(fraction_train=0.85, shuffle=true),
+            # acceleration=CPUThreads(),
+            n=nmodels # define the total number of models to try
+        )
+    end
+
     # we are skipping repeats to save time...
 
     # bind to data and train:
