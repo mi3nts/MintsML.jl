@@ -242,7 +242,7 @@ function train_hpo(y, X,
     # we are skipping repeats to save time...
 
     # bind to data and train:
-    mach = machine(tuning_pipe, X, y)
+    mach = machine(tuning_pipe, X, y; cache=false)
 
     println("Starting training...")
     fit!(mach, verbosity=0)
