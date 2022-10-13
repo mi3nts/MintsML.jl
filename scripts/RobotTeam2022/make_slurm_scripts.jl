@@ -48,7 +48,7 @@ end
 make_slurm_jobs(;
                 script_to_run="5b__hpo_RandomForestRegressor.jl",
                 basename="5b_hpo_",
-                n_tasks=2,
+                n_tasks=1,
 		            datapath="/scratch/jwaczak/data/datasets/Full",
 		            outpath="/scratch/jwaczak/data/analysis_full",
                 )
