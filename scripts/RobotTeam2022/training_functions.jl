@@ -224,7 +224,8 @@ function train_hpo(y, X,
             resampling=CV(nfolds=6, rng=rng), # this does ~ 85:15 split 6 times
             #resampling=Holdout(fraction_train=0.85, shuffle=true),
             acceleration=CPUThreads(),
-            n=nmodels # define the total number of models to try
+            n=nmodels,
+            cache=false,# define the total number of models to try
         )
     else
         tuning_pipe = TunedModel(
@@ -235,7 +236,8 @@ function train_hpo(y, X,
             resampling=CV(nfolds=6, rng=rng), # this does ~ 85:15 split 6 times
             # resampling=Holdout(fraction_train=0.85, shuffle=true),
             # acceleration=CPUThreads(),
-            n=nmodels # define the total number of models to try
+            n=nmodels,
+            cache=false,# define the total number of models to try
         )
     end
 
