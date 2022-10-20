@@ -11,7 +11,9 @@
 # Bayesian Hyperparameter Optimization with Gaussian Processes
 - [A Tutorial on Bayesian Optimization of Expensive Cost Functions...](https://arxiv.org/pdf/1012.2599.pdf)
 - [Distill Article on Bayesian Optimization](https://distill.pub/2020/bayesian-optimization/)
-- []()
+- [Gaussian Processes for Machine Learning](https://gaussianprocess.org/gpml/)
+- [Tutorial in Python](https://brendanhasz.github.io/2019/03/28/hyperparameter-optimization.html#:~:text=Bayesian%20Hyperparameter%20Optimization%20using%20Gaussian%20Processes,-28%20Mar%202019&text=Most%20machine%20learning%20models%20have,predictive%20performance%20of%20the%20algorithm.)
+- [Paper on Black Box Bayesian Optimization](https://link.springer.com/content/pdf/10.1023/A:1008306431147.pdf)
 
 # Conformal Prediction Papers 
 - [Quantile Regressor NN](https://arxiv.org/pdf/1909.12122.pdf)
