@@ -102,7 +102,7 @@ function main(mdl)
               "Random Forest Regressor", "RandomForestRegressor", "DecisionTree", mdl,
               target_name, units, target_long,
               outpath;
-              nmodels = 200,
+              nmodels = 100,
               )
 
 
