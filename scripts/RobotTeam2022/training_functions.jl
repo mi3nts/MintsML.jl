@@ -160,6 +160,12 @@ hpo_ranges = Dict("DecisionTree" => Dict("DecisionTreeRegressor" => [(hpname=:mi
                                                   ),
                   "MLJFlux" => Dict("NeuralNetworkRegressor" =>[],
                                     ),
+                  "LightGBM" => Dict("LGBMRegressor" => [(hpname=:num_iterations, lower=5, upper=100),
+                                                         (hpname=:learning_rate, lower=0.01, upper=0.3),
+                                                         (hpname=:max_depth, lower=3, upper=12),
+                                                         (hpname=:bagging_fraction, lower=0.65, upper=1.0),
+                                                         (hpname=:bagging_feq, values=[1]),
+                                                         ])
                   )
 
 
