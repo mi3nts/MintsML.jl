@@ -103,6 +103,7 @@ function main(mdl)
               target_name, units, target_long,
               outpath;
               nmodels = 100,
+              accelerate=false
               )
 
 
