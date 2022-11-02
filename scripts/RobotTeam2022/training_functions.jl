@@ -160,6 +160,12 @@ hpo_ranges = Dict("DecisionTree" => Dict("DecisionTreeRegressor" => [(hpname=:mi
                                                   ),
                   "MLJFlux" => Dict("NeuralNetworkRegressor" =>[],
                                     ),
+                  "LightGBM" => Dict("LGBMRegressor" => [(hpname=:num_iterations, lower=5, upper=100),
+                                                         (hpname=:learning_rate, lower=0.01, upper=0.3),
+                                                         (hpname=:max_depth, lower=3, upper=12),
+                                                         (hpname=:bagging_fraction, lower=0.65, upper=1.0),
+                                                         (hpname=:bagging_feq, values=[1]),
+                                                         ])
                   )
 
 
@@ -291,4 +297,167 @@ function train_hpo(y, X,
         println(f,"---------------------")
         println(f, "r² train: $(rsq(ŷ, y))\tr² test:$(rsq(ŷtest, ytest))\tRMSE test: $(rmse(ŷtest, ytest))\tMAE test: $(mae(ŷtest, ytest))")
     end
+end
+
+
+
+
+
+
+
+function train_stack(y, X,
+                   ytest, Xtest,
+                   longname, savename, packagename, mdl,
+                   target_name, units, target_long,
+                   outpath;
+                   accelerate = true,
+                   )
+
+
+
+    # load in models
+
+
+    DTR = @load DecisionTreeRegressor pkg=DecisionTree
+
+    bf = 0.7
+    #EDTR = EnsembleModel(atom=DTR(post_prune=true, rng=42), n=100, bagging_fraction=bf)
+
+    RFR = @load RandomForestRegressor pkg=DecisionTree
+    ETR = @load EvoTreeRegressor pkg=EvoTrees
+    KNNR = @load KNNRegressor pkg=NearestNeighborModels
+    XGBR = @load XGBoostRegressor pkg=XGBoost
+
+    # NNR = @load NeuralNetworkRegressor pkg=MLJFlux
+    # # nn = NNR(builder=MLJFlux.Short(n_hidden=50, σ=relu), epochs=25)
+    # # ensemble_nn = EnsembleModel(atom=nn, n=20, bagging_fraction=bf)
+    # nnr = NNR(builder=MLP((30, 30, 30, 30, 30), relu),
+    #           batch_size = 32,
+    #           optimiser=ADAM(0.01),
+    #           rng=42,
+    #           epochs=250,
+    #           )
+
+
+    LR = @load LassoRegressor pkg=MLJLinearModels
+
+
+    suffix = "stack"
+
+    println("Setting up save directories...")
+    outpathtarget = joinpath(outpath, target_name)
+    if !isdir(outpathtarget)
+        mkdir(outpathtarget)
+    end
+
+    outpathmodel = joinpath(outpathtarget, savename)
+    if !isdir(outpathmodel)
+        mkdir(outpathmodel)
+    end
+
+    outpathdefault = joinpath(outpathmodel, "default")
+    if !isdir(outpathdefault)
+        mkdir(outpathdefault)
+    end
+
+    outpath_stack = joinpath(outpathmodel, "superlearner_stack")
+    if !isdir(outpath_hpo)
+        mkdir(outpath_hpo)
+    end
+
+    path_to_use = outpath_stack
+
+
+
+    # rs = []
+
+    # for item ∈ hpo_ranges[packagename][savename]
+    #     if :values ∈ keys(item)
+    #         push!(rs, range(mdl, item.hpname, values=item.values))
+    #     else
+    #         push!(rs, range(mdl, item.hpname, lower=item.lower, upper=item.upper))
+    #     end
+    # end
+
+
+    # println("Performing hyperparameter optimization...")
+
+
+    # tuning = RandomSearch(rng=rng)
+
+    # if accelerate
+    #     tuning_pipe = TunedModel(
+    #         model=mdl,
+    #         range=rs,
+    #         tuning=tuning,
+    #         measures=[mae, rsq, rms],  #first is used for the optimization but all are stored
+    #         resampling=CV(nfolds=6, rng=rng), # this does ~ 85:15 split 6 times
+    #         #resampling=Holdout(fraction_train=0.85, shuffle=true),
+    #         acceleration=CPUThreads(),
+    #         n=nmodels,
+    #         cache=false,# define the total number of models to try
+    #     )
+    # else
+    #     tuning_pipe = TunedModel(
+    #         model=mdl,
+    #         range=rs,
+    #         tuning=tuning,
+    #         measures=[mae, rsq, rms],  #first is used for the optimization but all are stored
+    #         resampling=CV(nfolds=6, rng=rng), # this does ~ 85:15 split 6 times
+    #         # resampling=Holdout(fraction_train=0.85, shuffle=true),
+    #         # acceleration=CPUThreads(),
+    #         n=nmodels,
+    #         cache=false,# define the total number of models to try
+    #     )
+    # end
+
+    # # we are skipping repeats to save time...
+
+    # # bind to data and train:
+    # mach = machine(tuning_pipe, X, y; cache=false)
+
+    # println("Starting training...")
+    # fit!(mach, verbosity=0)
+
+    # println("...\tFinished training")
+    # println("Generating plots...")
+    # ŷ = MLJ.predict(mach, X)
+    # ŷtest = MLJ.predict(mach, Xtest)
+
+    # p1 = scatterresult(y, ŷ,
+    #                   ytest, ŷtest;
+    #                   xlabel="True $(target_long) [$(units)]",
+    #                   ylabel="Predicted $(target_long) [$(units)]",
+    #                   plot_title="Fit for $(longname)",)
+
+    # savefig(p1, joinpath(path_to_use, "scatterplt__$(suffix).png"))
+    # savefig(p1, joinpath(path_to_use, "scatterplt__$(suffix).svg"))
+    # savefig(p1, joinpath(path_to_use, "scatterplt__$(suffix).pdf"))
+
+    # p2 = quantilequantile(y, ŷ,
+    #                       ytest, ŷtest;
+    #                       xlabel="True $(target_long) [$(units)]",
+    #                       ylabel="Predicted $(target_long) [$(units)]",
+    #                       title="Fit for $(longname)",)
+
+    # savefig(p2, joinpath(path_to_use, "qq__$(suffix).png"))
+    # savefig(p2, joinpath(path_to_use, "qq__$(suffix).svg"))
+    # savefig(p2, joinpath(path_to_use, "qq__$(suffix).pdf"))
+
+
+    # # save the model
+    # MLJ.save(joinpath(path_to_use, "$(savename)__$(suffix).jls"), mach)
+
+    # open(joinpath(path_to_use, "$(savename)__hpo.txt"), "w") do f
+    #     show(f,"text/plain", fitted_params(mach).best_model)
+    #     println(f, "\n")
+    #     println(f,"---------------------")
+    #     show(f,"text/plain", fitted_params(mach).best_fitted_params)
+    #     println(f,"\n")
+    #     println(f,"---------------------")
+    #     show(f,"text/plain", report(mach).best_history_entry)
+    #     println(f,"\n")
+    #     println(f,"---------------------")
+    #     println(f, "r² train: $(rsq(ŷ, y))\tr² test:$(rsq(ŷtest, ytest))\tRMSE test: $(rmse(ŷtest, ytest))\tMAE test: $(mae(ŷtest, ytest))")
+    # end
 end
