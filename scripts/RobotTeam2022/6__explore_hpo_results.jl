@@ -15,8 +15,8 @@ include("./utils.jl")
 include("./training_functions.jl")
 
 # set up the paths
-path_to_data = "/scratch/jwaczak/data/analysis_full"
-# path_to_data = "/media/john/HSDATA/analysis_full"
+# path_to_data = "/scratch/jwaczak/data/analysis_full"
+path_to_data = "/media/john/HSDATA/analysis_full"
 
 # ispath(path_to_data)
 # testpath = joinpath(path_to_data, "CDOM", "DecisionTreeRegressor", "hyperparameter_optimized")
