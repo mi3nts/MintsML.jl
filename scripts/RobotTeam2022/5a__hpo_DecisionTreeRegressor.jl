@@ -106,7 +106,7 @@ function main(mdl)
               "Decision Tree Regressor", "DecisionTreeRegressor", "DecisionTree", mdl,
               target_name, units, target_long,
               outpath;
-              nmodels = 500
+              nmodels = 200
               )
 
 

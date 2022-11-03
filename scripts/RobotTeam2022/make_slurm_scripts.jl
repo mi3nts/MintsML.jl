@@ -36,40 +36,40 @@ function make_slurm_jobs(;script_to_run="5a__hpo_DecisionTreeRegressor.jl", base
 end
 
 
-# make_slurm_jobs(;
-#                 script_to_run="5a__hpo_DecisionTreeRegressor.jl",
-#                 basename="5a__hpo_",
-#                 n_tasks=4,
-# 		datapath="/scratch/jwaczak/data/datasets/Full",
-# 		outpath="/scratch/jwaczak/data/analysis_full",
-#                 )
+make_slurm_jobs(;
+                script_to_run="5a__hpo_DecisionTreeRegressor.jl",
+                basename="5a__hpo_",
+                n_tasks=4,
+		datapath="/scratch/jwaczak/data/datasets/Full",
+		outpath="/scratch/jwaczak/data/analysis_full",
+                )
 
 
-# make_slurm_jobs(;
-#                 script_to_run="5b__hpo_RandomForestRegressor.jl",
-#                 basename="5b_hpo_",
-#                 n_tasks=4,
-# 		            datapath="/scratch/jwaczak/data/datasets/Full",
-# 		            outpath="/scratch/jwaczak/data/analysis_full",
-#                 )
+make_slurm_jobs(;
+                script_to_run="5b__hpo_RandomForestRegressor.jl",
+                basename="5b_hpo_",
+                n_tasks=4,
+		            datapath="/scratch/jwaczak/data/datasets/Full",
+		            outpath="/scratch/jwaczak/data/analysis_full",
+                )
 
 
-# make_slurm_jobs(;
-#                 script_to_run="5d__hpo_KNNRegressor.jl",
-#                 basename="5d__hpo_",
-#                 n_tasks=4,
-# 		            datapath="/scratch/jwaczak/data/datasets/Full",
-# 		            outpath="/scratch/jwaczak/data/analysis_full",
-#                 )
+make_slurm_jobs(;
+                script_to_run="5d__hpo_KNNRegressor.jl",
+                basename="5d__hpo_",
+                n_tasks=4,
+		            datapath="/scratch/jwaczak/data/datasets/Full",
+		            outpath="/scratch/jwaczak/data/analysis_full",
+                )
 
 
-# make_slurm_jobs(;
-#                 script_to_run="5c__hpo_XGBoostRegressor.jl",
-#                 basename="5c_hpo_",
-#                 n_tasks=4,
-# 		            datapath="/scratch/jwaczak/data/datasets/Full",
-# 		            outpath="/scratch/jwaczak/data/analysis_full",
-#                 )
+make_slurm_jobs(;
+                script_to_run="5c__hpo_XGBoostRegressor.jl",
+                basename="5c_hpo_",
+                n_tasks=4,
+		            datapath="/scratch/jwaczak/data/datasets/Full",
+		            outpath="/scratch/jwaczak/data/analysis_full",
+                )
 
 
 make_slurm_jobs(;
@@ -81,13 +81,13 @@ make_slurm_jobs(;
                 )
 
 
-# make_slurm_jobs(;
-#                 script_to_run="5f__hpo_LGBMRegressor.jl",
-#                 basename="5f_hpo_",
-#                 n_tasks=4,
-# 		            datapath="/scratch/jwaczak/data/datasets/Full",
-# 		            outpath="/scratch/jwaczak/data/analysis_full",
-#                 )
+make_slurm_jobs(;
+                script_to_run="5f__hpo_LGBMRegressor.jl",
+                basename="5f_hpo_",
+                n_tasks=4,
+		            datapath="/scratch/jwaczak/data/datasets/Full",
+		            outpath="/scratch/jwaczak/data/analysis_full",
+                )
 
 
 

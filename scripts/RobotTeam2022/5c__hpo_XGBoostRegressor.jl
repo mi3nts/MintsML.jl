@@ -101,7 +101,7 @@ function main(mdl)
               "XGBoost Regressor", "XGBoostRegressor", "XGBoost", mdl,
               target_name, units, target_long,
               outpath;
-              nmodels = 500
+              nmodels = 200
               )
 
 
