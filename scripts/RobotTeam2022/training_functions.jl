@@ -170,8 +170,6 @@ hpo_ranges = Dict("DecisionTree" => Dict("DecisionTreeRegressor" => [(hpname=:mi
 
 
 
-
-
 function train_hpo(y, X,
                    ytest, Xtest,
                    longname, savename, packagename, mdl,
@@ -319,15 +317,15 @@ function train_stack(y, X,
 
 
     DTR = @load DecisionTreeRegressor pkg=DecisionTree
-
-    bf = 0.7
-    #EDTR = EnsembleModel(atom=DTR(post_prune=true, rng=42), n=100, bagging_fraction=bf)
-
     RFR = @load RandomForestRegressor pkg=DecisionTree
-    ETR = @load EvoTreeRegressor pkg=EvoTrees
-    KNNR = @load KNNRegressor pkg=NearestNeighborModels
     XGBR = @load XGBoostRegressor pkg=XGBoost
+    KNNR = @load KNNRegressor pkg=NearestNeighborModels
+    ETR = @load EvoTreeRegressor pkg=EvoTrees
+    LGBR = @load LGBMRegressor pkg=LightGBM
+    LR = @load LassoRegressor pkg=MLJLinearModels
 
+    # bf = 0.7
+    # EDTR = EnsembleModel(atom=DTR(post_prune=true, rng=42), n=100, bagging_fraction=bf)
     # NNR = @load NeuralNetworkRegressor pkg=MLJFlux
     # # nn = NNR(builder=MLJFlux.Short(n_hidden=50, σ=relu), epochs=25)
     # # ensemble_nn = EnsembleModel(atom=nn, n=20, bagging_fraction=bf)
@@ -337,9 +335,6 @@ function train_stack(y, X,
     #           rng=42,
     #           epochs=250,
     #           )
-
-
-    LR = @load LassoRegressor pkg=MLJLinearModels
 
 
     suffix = "stack"
@@ -360,6 +355,11 @@ function train_stack(y, X,
         mkdir(outpathdefault)
     end
 
+    outpath_hpo = joinpath(outpathmodel, "hyperparameter_optimized")
+    if !isdir(outpath_hpo)
+        mkdir(outpath_hpo)
+    end
+
     outpath_stack = joinpath(outpathmodel, "superlearner_stack")
     if !isdir(outpath_hpo)
         mkdir(outpath_hpo)
@@ -367,6 +367,19 @@ function train_stack(y, X,
 
     path_to_use = outpath_stack
 
+    # go through each model and load the HPO optimized version.
+    path = joinpath(path_to_data, String(target), model_name, "hyperparameter_optimized")
+    fpath = joinpath(path, model_name*"__hpo.jls")
+    mach = machine(fpath)
+
+    model = @load DecisionTreeRegressor pkg=DecisionTree
+
+    mdl = model()
+    ps = params(fitted_params(mach).best_model)
+    for (p, val) ∈ zip(keys(ps), ps)
+        println(p, "\t", val)
+        setproperty!(mdl, Symbol(p), val)
+    end
 
 
     # rs = []
