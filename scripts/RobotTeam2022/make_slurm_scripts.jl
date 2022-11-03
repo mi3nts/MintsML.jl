@@ -72,22 +72,22 @@ end
 #                 )
 
 
-# make_slurm_jobs(;
-#                 script_to_run="5e__hpo_EvoTreeRegressor.jl",
-#                 basename="5e_hpo_",
-#                 n_tasks=2,
-# 		            datapath="/scratch/jwaczak/data/datasets/Full",
-# 		            outpath="/scratch/jwaczak/data/analysis_full",
-#                 )
-
-
 make_slurm_jobs(;
-                script_to_run="5f__hpo_LGBMRegressor.jl",
-                basename="5f_hpo_",
-                n_tasks=4,
+                script_to_run="5e__hpo_EvoTreeRegressor.jl",
+                basename="5e_hpo_",
+                n_tasks=2,
 		            datapath="/scratch/jwaczak/data/datasets/Full",
 		            outpath="/scratch/jwaczak/data/analysis_full",
                 )
+
+
+# make_slurm_jobs(;
+#                 script_to_run="5f__hpo_LGBMRegressor.jl",
+#                 basename="5f_hpo_",
+#                 n_tasks=4,
+# 		            datapath="/scratch/jwaczak/data/datasets/Full",
+# 		            outpath="/scratch/jwaczak/data/analysis_full",
+#                 )
 
 
 
