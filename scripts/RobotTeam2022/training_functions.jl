@@ -1,4 +1,5 @@
 using StableRNGs
+using JSON
 
 # seed rng for reproducibility
 rng = StableRNG(42)
@@ -300,6 +301,8 @@ end
 
 
 
+# load in smart defaults
+smart_defaults = JSON.parsefile("smart_hp_defaults.json")
 
 
 function train_stack(y, X,
@@ -342,76 +345,137 @@ function train_stack(y, X,
 
     # go through each model and load the HPO optimized version.
     # -------- DTR -----------
-    path = joinpath(outpathtarget, "DecisionTreeRegressor", "hyperparameter_optimized")
-    fpath = joinpath(path, "DecisionTreeRegressor__hpo.jls")
-    mach = machine(fpath)
+    try
+        path = joinpath(outpathtarget, "DecisionTreeRegressor", "hyperparameter_optimized")
+        fpath = joinpath(path, "DecisionTreeRegressor__hpo.jls")
+        mach = machine(fpath)
 
-    dtr = DTR()
-    ps = params(fitted_params(mach).best_model)
-    for (p, val) ∈ zip(keys(ps), ps)
-        println(p, "\t", val)
-        setproperty!(dtr, Symbol(p), val)
+        dtr = DTR()
+        ps = params(fitted_params(mach).best_model)
+        for (p, val) ∈ zip(keys(ps), ps)
+            println(p, "\t", val)
+            setproperty!(dtr, Symbol(p), val)
+        end
+    catch e
+        println("couldnt find hpo results. Loading smart defaults instead")
+        dtr = DTR()
+        for (p, val) ∈ smart_defaults["DecisionTree"]["DecisionTreeRegressor"]
+            println(p, "\t", val)
+            setproperty!(dtr, Symbol(p), val)
+        end
     end
+
 
     # -------- RFR -----------
-    path = joinpath(outpathtarget, "RandomForestRegressor", "hyperparameter_optimized")
-    fpath = joinpath(path, "RandomForestRegressor__hpo.jls")
-    mach = machine(fpath)
+    try
+        path = joinpath(outpathtarget, "RandomForestRegressor", "hyperparameter_optimized")
+        fpath = joinpath(path, "RandomForestRegressor__hpo.jls")
+        mach = machine(fpath)
 
-    rfr = RFR()
-    ps = params(fitted_params(mach).best_model)
-    for (p, val) ∈ zip(keys(ps), ps)
-        println(p, "\t", val)
-        setproperty!(rfr, Symbol(p), val)
+        rfr = RFR()
+        ps = params(fitted_params(mach).best_model)
+        for (p, val) ∈ zip(keys(ps), ps)
+            println(p, "\t", val)
+            setproperty!(rfr, Symbol(p), val)
+        end
+    catch e
+        println("couldnt find hpo results. Loading smart defaults instead")
+        rfr = RFR()
+        for (p, val) ∈ smart_defaults["DecisionTree"]["RandomForestRegressor"]
+            println(p, "\t", val)
+            setproperty!(rfr, Symbol(p), val)
+        end
     end
+
 
     # -------- XGBR -----------
-    path = joinpath(outpathtarget, "XGBoostRegressor", "hyperparameter_optimized")
-    fpath = joinpath(path, "XGBoostRegressor__hpo.jls")
-    mach = machine(fpath)
+    try
+        path = joinpath(outpathtarget, "XGBoostRegressor", "hyperparameter_optimized")
+        fpath = joinpath(path, "XGBoostRegressor__hpo.jls")
+        mach = machine(fpath)
 
-    xgbr = XGBR()
-    ps = params(fitted_params(mach).best_model)
-    for (p, val) ∈ zip(keys(ps), ps)
-        println(p, "\t", val)
-        setproperty!(xgbr, Symbol(p), val)
+        xgbr = XGBR()
+        ps = params(fitted_params(mach).best_model)
+        for (p, val) ∈ zip(keys(ps), ps)
+            println(p, "\t", val)
+            setproperty!(xgbr, Symbol(p), val)
+        end
+    catch e
+        println("couldnt find hpo results. Loading smart defaults instead")
+        xgbr  = XGBR()
+        for (p, val) ∈ smart_defaults["XGBoost"]["XGBoostRegressor"]
+            println(p, "\t", val)
+            setproperty!(xgbr, Symbol(p), val)
+        end
     end
+
 
     # -------- KNNR -----------
-    path = joinpath(outpathtarget, "KNNRegressor", "hyperparameter_optimized")
-    fpath = joinpath(path, "KNNRegressor__hpo.jls")
-    mach = machine(fpath)
+    try
+        path = joinpath(outpathtarget, "KNNRegressor", "hyperparameter_optimized")
+        fpath = joinpath(path, "KNNRegressor__hpo.jls")
+        mach = machine(fpath)
 
-    knnr = KNNR()
-    ps = params(fitted_params(mach).best_model)
-    for (p, val) ∈ zip(keys(ps), ps)
-        println(p, "\t", val)
-        setproperty!(knnr, Symbol(p), val)
+        knnr = KNNR()
+        ps = params(fitted_params(mach).best_model)
+        for (p, val) ∈ zip(keys(ps), ps)
+            println(p, "\t", val)
+            setproperty!(knnr, Symbol(p), val)
+        end
+    catch e
+        println("couldnt find hpo results. Loading smart defaults instead")
+        knnr  = KNNR()
+        for (p, val) ∈ smart_defaults["NearestNeighborModels"]["KNNR"]
+            println(p, "\t", val)
+            setproperty!(knnr, Symbol(p), val)
+        end
     end
+
 
     # -------- ETR -----------
-    path = joinpath(outpathtarget, "EvoTreeRegressor", "hyperparameter_optimized")
-    fpath = joinpath(path, "EvoTreeRegressor__hpo.jls")
-    mach = machine(fpath)
+    try
+        path = joinpath(outpathtarget, "EvoTreeRegressor", "hyperparameter_optimized")
+        fpath = joinpath(path, "EvoTreeRegressor__hpo.jls")
+        mach = machine(fpath)
 
-    etr = ETR()
-    ps = params(fitted_params(mach).best_model)
-    for (p, val) ∈ zip(keys(ps), ps)
-        println(p, "\t", val)
-        setproperty!(etr, Symbol(p), val)
+        etr = ETR()
+        ps = params(fitted_params(mach).best_model)
+        for (p, val) ∈ zip(keys(ps), ps)
+            println(p, "\t", val)
+            setproperty!(etr, Symbol(p), val)
+        end
+    catch e
+        println("couldnt find hpo results. Loading smart defaults instead")
+        etr  = ETR()
+        for (p, val) ∈ smart_defaults["EvoTrees"]["EvoTreeRegressor"]
+            println(p, "\t", val)
+            setproperty!(etr, Symbol(p), val)
+        end
     end
+
 
     # -------- LGBR -----------
-    path = joinpath(outpathtarget, "LGBMRegreesor", "hyperparameter_optimized")
-    fpath = joinpath(path, "LGBMRegressor__hpo.jls")
-    mach = machine(fpath)
+    try
+        path = joinpath(outpathtarget, "LGBMRegreesor", "hyperparameter_optimized")
+        fpath = joinpath(path, "LGBMRegressor__hpo.jls")
+        mach = machine(fpath)
 
-    lgbr = LGBR()
-    ps = params(fitted_params(mach).best_model)
-    for (p, val) ∈ zip(keys(ps), ps)
-        println(p, "\t", val)
-        setproperty!(lgbr, Symbol(p), val)
+        lgbr = LGBR()
+        ps = params(fitted_params(mach).best_model)
+        for (p, val) ∈ zip(keys(ps), ps)
+            println(p, "\t", val)
+            setproperty!(lgbr, Symbol(p), val)
+        end
+    catch e
+        println("couldnt find hpo results. Loading smart defaults instead")
+        lgbr  = LGBR()
+        for (p, val) ∈ smart_defaults["LightGBM"]["LGBMRegressor"]
+            println(p, "\t", val)
+            setproperty!(lgbr, Symbol(p), val)
+        end
     end
+
+
 
     if accelerate
         stack = Stack(;
