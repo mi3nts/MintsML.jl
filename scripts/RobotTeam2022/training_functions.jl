@@ -302,7 +302,6 @@ end
 
 
 
-
 function train_stack(y, X,
                    ytest, Xtest,
                    target_name, units, target_long,
@@ -310,18 +309,9 @@ function train_stack(y, X,
                    accelerate = true,
                    )
 
-
     longname = "Superlearner Stack"
     savename = "superlearner"
     suffix = "stack"
-
-    DTR = @load DecisionTreeRegressor pkg=DecisionTree
-    RFR = @load RandomForestRegressor pkg=DecisionTree
-    XGBR = @load XGBoostRegressor pkg=XGBoost
-    KNNR = @load KNNRegressor pkg=NearestNeighborModels
-    ETR = @load EvoTreeRegressor pkg=EvoTrees
-    LGBR = @load LGBMRegressor pkg=LightGBM
-    LR = @load LassoRegressor pkg=MLJLinearModels
 
     # bf = 0.7
     # EDTR = EnsembleModel(atom=DTR(post_prune=true, rng=42), n=100, bagging_fraction=bf)

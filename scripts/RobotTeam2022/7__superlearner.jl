@@ -109,4 +109,12 @@ function main()
 end
 
 
+DTR = @load DecisionTreeRegressor pkg=DecisionTree
+RFR = @load RandomForestRegressor pkg=DecisionTree
+XGBR = @load XGBoostRegressor pkg=XGBoost
+KNNR = @load KNNRegressor pkg=NearestNeighborModels
+ETR = @load EvoTreeRegressor pkg=EvoTrees
+LGBR = @load LGBMRegressor pkg=LightGBM
+LR = @load LassoRegressor pkg=MLJLinearModels
+
 main()
