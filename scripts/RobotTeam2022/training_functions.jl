@@ -372,8 +372,8 @@ function train_stack(y, X,
     end
 
     # -------- Ensemble of Trees -----------
-    bf = 0.75
-    edtr = EnsembleModel(atom=dtr, n=100, bagging_fraction=bf)
+    bf = 0.8
+    edtr = EnsembleModel(model=dtr, n=100, bagging_fraction=bf)
 
 
 
