@@ -536,13 +536,6 @@ function train_stack(y, X,
     MLJ.save(joinpath(path_to_use, "$(savename)__$(suffix).jls"), mach)
 
     open(joinpath(path_to_use, "$(savename)__hpo.txt"), "w") do f
-        show(f,"text/plain", fitted_params(mach).best_model)
-        println(f, "\n")
-        println(f,"---------------------")
-        show(f,"text/plain", fitted_params(mach).best_fitted_params)
-        println(f,"\n")
-        println(f,"---------------------")
-        show(f,"text/plain", report(mach).best_history_entry)
         println(f,"\n")
         println(f,"---------------------")
         println(f, "r² train: $(rsq(ŷ, y))\tr² test:$(rsq(ŷtest, ytest))\tRMSE test: $(rmse(ŷtest, ytest))\tMAE test: $(mae(ŷtest, ytest))")
