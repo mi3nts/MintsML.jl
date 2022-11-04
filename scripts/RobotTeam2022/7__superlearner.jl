@@ -7,6 +7,7 @@ Pkg.instantiate()
 
 using mintsML
 using MLJ
+using Flux, MLJFlux
 using Plots, StatsPlots
 using DataFrames, CSV
 using ProgressMeter
