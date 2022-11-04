@@ -344,8 +344,8 @@ function train_stack(y, X,
     end
 
     outpath_stack = joinpath(outpathtarget, "superlearner_stack")
-    if !isdir(outpath_hpo)
-        mkdir(outpath_hpo)
+    if !isdir(outpath_stack)
+        mkdir(outpath_stack)
     end
 
     path_to_use = outpath_stack
