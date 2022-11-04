@@ -305,16 +305,15 @@ end
 
 function train_stack(y, X,
                    ytest, Xtest,
-                   longname, savename, packagename, mdl,
                    target_name, units, target_long,
                    outpath;
                    accelerate = true,
                    )
 
 
-
-    # load in models
-
+    longname = "Superlearner Stack"
+    savename = "superlearner"
+    suffix = "stack"
 
     DTR = @load DecisionTreeRegressor pkg=DecisionTree
     RFR = @load RandomForestRegressor pkg=DecisionTree
@@ -337,7 +336,6 @@ function train_stack(y, X,
     #           )
 
 
-    suffix = "stack"
 
     println("Setting up save directories...")
     outpathtarget = joinpath(outpath, target_name)
@@ -345,22 +343,7 @@ function train_stack(y, X,
         mkdir(outpathtarget)
     end
 
-    outpathmodel = joinpath(outpathtarget, savename)
-    if !isdir(outpathmodel)
-        mkdir(outpathmodel)
-    end
-
-    outpathdefault = joinpath(outpathmodel, "default")
-    if !isdir(outpathdefault)
-        mkdir(outpathdefault)
-    end
-
-    outpath_hpo = joinpath(outpathmodel, "hyperparameter_optimized")
-    if !isdir(outpath_hpo)
-        mkdir(outpath_hpo)
-    end
-
-    outpath_stack = joinpath(outpathmodel, "superlearner_stack")
+    outpath_stack = joinpath(outpathtarget, "superlearner_stack")
     if !isdir(outpath_hpo)
         mkdir(outpath_hpo)
     end
@@ -368,109 +351,152 @@ function train_stack(y, X,
     path_to_use = outpath_stack
 
     # go through each model and load the HPO optimized version.
-    path = joinpath(path_to_data, String(target), model_name, "hyperparameter_optimized")
-    fpath = joinpath(path, model_name*"__hpo.jls")
+    # -------- DTR -----------
+    path = joinpath(outpathtarget, "DecisionTreeRegressor", "hyperparameter_optimized")
+    fpath = joinpath(path, "DecisionTreeRegressor__hpo.jls")
     mach = machine(fpath)
 
-    model = @load DecisionTreeRegressor pkg=DecisionTree
-
-    mdl = model()
+    dtr = DTR()
     ps = params(fitted_params(mach).best_model)
     for (p, val) ∈ zip(keys(ps), ps)
         println(p, "\t", val)
-        setproperty!(mdl, Symbol(p), val)
+        setproperty!(dtr, Symbol(p), val)
     end
 
+    # -------- RFR -----------
+    path = joinpath(outpathtarget, "RandomForestRegressor", "hyperparameter_optimized")
+    fpath = joinpath(path, "RandomForestRegressor__hpo.jls")
+    mach = machine(fpath)
 
-    # rs = []
+    rfr = RFR()
+    ps = params(fitted_params(mach).best_model)
+    for (p, val) ∈ zip(keys(ps), ps)
+        println(p, "\t", val)
+        setproperty!(rfr, Symbol(p), val)
+    end
 
-    # for item ∈ hpo_ranges[packagename][savename]
-    #     if :values ∈ keys(item)
-    #         push!(rs, range(mdl, item.hpname, values=item.values))
-    #     else
-    #         push!(rs, range(mdl, item.hpname, lower=item.lower, upper=item.upper))
-    #     end
-    # end
+    # -------- XGBR -----------
+    path = joinpath(outpathtarget, "XGBoostRegressor", "hyperparameter_optimized")
+    fpath = joinpath(path, "XGBoostRegressor__hpo.jls")
+    mach = machine(fpath)
+
+    xgbr = XGBR()
+    ps = params(fitted_params(mach).best_model)
+    for (p, val) ∈ zip(keys(ps), ps)
+        println(p, "\t", val)
+        setproperty!(xgbr, Symbol(p), val)
+    end
+
+    # -------- KNNR -----------
+    path = joinpath(outpathtarget, "KNNRegressor", "hyperparameter_optimized")
+    fpath = joinpath(path, "KNNRegressor__hpo.jls")
+    mach = machine(fpath)
+
+    knnr = KNNR()
+    ps = params(fitted_params(mach).best_model)
+    for (p, val) ∈ zip(keys(ps), ps)
+        println(p, "\t", val)
+        setproperty!(knnr, Symbol(p), val)
+    end
+
+    # -------- ETR -----------
+    path = joinpath(outpathtarget, "EvoTreeRegressor", "hyperparameter_optimized")
+    fpath = joinpath(path, "EvoTreeRegressor__hpo.jls")
+    mach = machine(fpath)
+
+    etr = ETR()
+    ps = params(fitted_params(mach).best_model)
+    for (p, val) ∈ zip(keys(ps), ps)
+        println(p, "\t", val)
+        setproperty!(etr, Symbol(p), val)
+    end
+
+    # -------- LGBR -----------
+    path = joinpath(outpathtarget, "LGBMRegreesor", "hyperparameter_optimized")
+    fpath = joinpath(path, "LGBMRegressor__hpo.jls")
+    mach = machine(fpath)
+
+    lgbr = LGBR()
+    ps = params(fitted_params(mach).best_model)
+    for (p, val) ∈ zip(keys(ps), ps)
+        println(p, "\t", val)
+        setproperty!(lgbr, Symbol(p), val)
+    end
+
+    if accelerate
+        stack = Stack(;
+                      metalearner=LR(),
+                      dtr=dtr,
+                      rfr=rfr,
+                      xgbr=xgbr,
+                      knnr=knrr,
+                      etr=etr,
+                      lgbr=lgbr,
+                      resampling=CV(nfolds=6, rng=rng),
+                      acceleration=CPUThreads(),
+                      cache=false,
+                      )
+    else
+        stack = Stack(;
+                      metalearner=LR(),
+                      dtr=dtr,
+                      rfr=rfr,
+                      xgbr=xgbr,
+                      knnr=knrr,
+                      etr=etr,
+                      lgbr=lgbr,
+                      resampling=CV(nfolds=6, rng=rng),
+                      cache=false,
+                      )
+    end
+
+    # we are skipping repeats to save time...
+
+    # bind to data and train:
+    mach = machine(stack, X, y; cache=false)
+
+    println("Starting training...")
+    fit!(mach, verbosity=0)
+
+    println("...\tFinished training")
+    println("Generating plots...")
+    ŷ = MLJ.predict(mach, X)
+    ŷtest = MLJ.predict(mach, Xtest)
+
+    p1 = scatterresult(y, ŷ,
+                      ytest, ŷtest;
+                      xlabel="True $(target_long) [$(units)]",
+                      ylabel="Predicted $(target_long) [$(units)]",
+                      plot_title="Fit for $(longname)",)
+
+    savefig(p1, joinpath(path_to_use, "scatterplt__$(suffix).png"))
+    savefig(p1, joinpath(path_to_use, "scatterplt__$(suffix).svg"))
+    savefig(p1, joinpath(path_to_use, "scatterplt__$(suffix).pdf"))
+
+    p2 = quantilequantile(y, ŷ,
+                          ytest, ŷtest;
+                          xlabel="True $(target_long) [$(units)]",
+                          ylabel="Predicted $(target_long) [$(units)]",
+                          title="Fit for $(longname)",)
+
+    savefig(p2, joinpath(path_to_use, "qq__$(suffix).png"))
+    savefig(p2, joinpath(path_to_use, "qq__$(suffix).svg"))
+    savefig(p2, joinpath(path_to_use, "qq__$(suffix).pdf"))
 
 
-    # println("Performing hyperparameter optimization...")
+    # save the model
+    MLJ.save(joinpath(path_to_use, "$(savename)__$(suffix).jls"), mach)
 
-
-    # tuning = RandomSearch(rng=rng)
-
-    # if accelerate
-    #     tuning_pipe = TunedModel(
-    #         model=mdl,
-    #         range=rs,
-    #         tuning=tuning,
-    #         measures=[mae, rsq, rms],  #first is used for the optimization but all are stored
-    #         resampling=CV(nfolds=6, rng=rng), # this does ~ 85:15 split 6 times
-    #         #resampling=Holdout(fraction_train=0.85, shuffle=true),
-    #         acceleration=CPUThreads(),
-    #         n=nmodels,
-    #         cache=false,# define the total number of models to try
-    #     )
-    # else
-    #     tuning_pipe = TunedModel(
-    #         model=mdl,
-    #         range=rs,
-    #         tuning=tuning,
-    #         measures=[mae, rsq, rms],  #first is used for the optimization but all are stored
-    #         resampling=CV(nfolds=6, rng=rng), # this does ~ 85:15 split 6 times
-    #         # resampling=Holdout(fraction_train=0.85, shuffle=true),
-    #         # acceleration=CPUThreads(),
-    #         n=nmodels,
-    #         cache=false,# define the total number of models to try
-    #     )
-    # end
-
-    # # we are skipping repeats to save time...
-
-    # # bind to data and train:
-    # mach = machine(tuning_pipe, X, y; cache=false)
-
-    # println("Starting training...")
-    # fit!(mach, verbosity=0)
-
-    # println("...\tFinished training")
-    # println("Generating plots...")
-    # ŷ = MLJ.predict(mach, X)
-    # ŷtest = MLJ.predict(mach, Xtest)
-
-    # p1 = scatterresult(y, ŷ,
-    #                   ytest, ŷtest;
-    #                   xlabel="True $(target_long) [$(units)]",
-    #                   ylabel="Predicted $(target_long) [$(units)]",
-    #                   plot_title="Fit for $(longname)",)
-
-    # savefig(p1, joinpath(path_to_use, "scatterplt__$(suffix).png"))
-    # savefig(p1, joinpath(path_to_use, "scatterplt__$(suffix).svg"))
-    # savefig(p1, joinpath(path_to_use, "scatterplt__$(suffix).pdf"))
-
-    # p2 = quantilequantile(y, ŷ,
-    #                       ytest, ŷtest;
-    #                       xlabel="True $(target_long) [$(units)]",
-    #                       ylabel="Predicted $(target_long) [$(units)]",
-    #                       title="Fit for $(longname)",)
-
-    # savefig(p2, joinpath(path_to_use, "qq__$(suffix).png"))
-    # savefig(p2, joinpath(path_to_use, "qq__$(suffix).svg"))
-    # savefig(p2, joinpath(path_to_use, "qq__$(suffix).pdf"))
-
-
-    # # save the model
-    # MLJ.save(joinpath(path_to_use, "$(savename)__$(suffix).jls"), mach)
-
-    # open(joinpath(path_to_use, "$(savename)__hpo.txt"), "w") do f
-    #     show(f,"text/plain", fitted_params(mach).best_model)
-    #     println(f, "\n")
-    #     println(f,"---------------------")
-    #     show(f,"text/plain", fitted_params(mach).best_fitted_params)
-    #     println(f,"\n")
-    #     println(f,"---------------------")
-    #     show(f,"text/plain", report(mach).best_history_entry)
-    #     println(f,"\n")
-    #     println(f,"---------------------")
-    #     println(f, "r² train: $(rsq(ŷ, y))\tr² test:$(rsq(ŷtest, ytest))\tRMSE test: $(rmse(ŷtest, ytest))\tMAE test: $(mae(ŷtest, ytest))")
-    # end
+    open(joinpath(path_to_use, "$(savename)__hpo.txt"), "w") do f
+        show(f,"text/plain", fitted_params(mach).best_model)
+        println(f, "\n")
+        println(f,"---------------------")
+        show(f,"text/plain", fitted_params(mach).best_fitted_params)
+        println(f,"\n")
+        println(f,"---------------------")
+        show(f,"text/plain", report(mach).best_history_entry)
+        println(f,"\n")
+        println(f,"---------------------")
+        println(f, "r² train: $(rsq(ŷ, y))\tr² test:$(rsq(ŷtest, ytest))\tRMSE test: $(rmse(ŷtest, ytest))\tMAE test: $(mae(ŷtest, ytest))")
+    end
 end

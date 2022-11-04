@@ -55,7 +55,7 @@ function parse_commandline()
 end
 
 
-function main(mdl)
+function main()
     # parse args making sure that supplied target does exist
     parsed_args = parse_commandline()
     target = parsed_args[:target]
@@ -97,19 +97,16 @@ function main(mdl)
     X̃test = Xtest[:, vcat(refs, others)]
 
 
-    # train_stack(y, X̃,
-    #           ytest, X̃test,
-    #           "Decision Tree Regressor", "DecisionTreeRegressor", "DecisionTree", mdl,
-    #           target_name, units, target_long,
-    #           outpath;
-    #           nmodels = 500
-    #           )
+    train_stack(y, X̃,
+                ytest, X̃test,
+                target_name, units, target_long,
+                outpath;
+                accelerate = false,
+                )
 
 
 
 end
 
 
-# model = @load DecisionTreeRegressor pkg=DecisionTree
-# mdl = model()
-# main(mdl)
+main()
