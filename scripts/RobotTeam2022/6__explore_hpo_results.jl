@@ -17,17 +17,21 @@ include("./training_functions.jl")
 # set up the paths
 path_to_data = "/scratch/jwaczak/data/analysis_full"
 # path_to_data = "/media/john/HSDATA/analysis_full"
+ispath(path_to_data)
 
-# ispath(path_to_data)
-# testpath = joinpath(path_to_data, "CDOM", "DecisionTreeRegressor", "hyperparameter_optimized")
+# # testpath = joinpath(path_to_data, "CDOM", "DecisionTreeRegressor", "hyperparameter_optimized")
+# testpath = joinpath(path_to_data, "CDOM", "KNNRegressor", "hyperparameter_optimized")
 # readdir(testpath)
 
-# testmach = joinpath(testpath, "DecisionTreeRegressor__hpo.jls")
+# testmach = joinpath(testpath, "KNNRegressor__hpo.jls")
 # isfile(testmach)
+
+# model = @load KNNRegressor pkg=NearestNeighborModels
 
 # mach = machine(testmach)
 
-# model = @load DecisionTreeRegressor pkg=DecisionTree
+
+
 
 # mdl = model()
 # ps = params(fitted_params(mach).best_model)
@@ -47,13 +51,13 @@ for model_package ∈ keys(hpo_ranges)
             df = DataFrame()
             for (target, info) ∈ targetsDict
                 try
+                    load_string = "model = @load $(model_name) pkg=$(model_package) verbosity=0 add=true"
+                    eval(Meta.parse(load_string))
+
                     path = joinpath(path_to_data, String(target), model_name, "hyperparameter_optimized")
                     fpath = joinpath(path, model_name*"__hpo.jls")
 
                     mach = machine(fpath)
-
-                    load_string = "model = @load $(model_name) pkg=$(model_package) verbosity=0 add=true"
-                    eval(Meta.parse(load_string))
                     fitted_ps = fitted_params(mach).best_model
 
                     params_dict = Dict{Any,Any}(:target => target)
