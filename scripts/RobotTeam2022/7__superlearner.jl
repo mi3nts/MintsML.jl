@@ -116,5 +116,7 @@ KNNR = @load KNNRegressor pkg=NearestNeighborModels
 ETR = @load EvoTreeRegressor pkg=EvoTrees
 LGBR = @load LGBMRegressor pkg=LightGBM
 LR = @load LassoRegressor pkg=MLJLinearModels
+LinearR = @load LinearRegressor pkg=MLJLinearModels
+RR = @load RidgeRegressor pkg=MLJLinearModels
 
 main()

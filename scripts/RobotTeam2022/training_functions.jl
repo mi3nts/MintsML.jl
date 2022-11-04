@@ -316,9 +316,7 @@ function train_stack(y, X,
     savename = "superlearner"
     suffix = "stack"
 
-    # bf = 0.7
-    # EDTR = EnsembleModel(atom=DTR(post_prune=true, rng=42), n=100, bagging_fraction=bf)
-    # NNR = @load NeuralNetworkRegressor pkg=MLJFlux
+    # NNR = load NeuralNetworkRegressor pkg=MLJFlux
     # # nn = NNR(builder=MLJFlux.Short(n_hidden=50, σ=relu), epochs=25)
     # # ensemble_nn = EnsembleModel(atom=nn, n=20, bagging_fraction=bf)
     # nnr = NNR(builder=MLP((30, 30, 30, 30, 30), relu),
@@ -327,6 +325,15 @@ function train_stack(y, X,
     #           rng=42,
     #           epochs=250,
     #           )
+
+    nnr = NNR(builder=MLJFlux.MLP(hidden=(250,100,50), σ=NNlib.relu),
+              batch_size = 200,
+              optimiser=Flux.Optimise.ADAM(0.001),
+              lambda = 0.0001,  # default regularization strength (I'm a bit confused by this as sk-learn only has alpha but that seems different here)
+              rng=rng,
+              epochs=200,
+              )
+
 
 
 
@@ -363,6 +370,12 @@ function train_stack(y, X,
             setproperty!(dtr, Symbol(p), val)
         end
     end
+
+    # -------- Ensemble of Trees -----------
+    bf = 0.75
+    edtr = EnsembleModel(atom=dtr, n=100, bagging_fraction=bf)
+
+
 
 
     # -------- RFR -----------
@@ -473,26 +486,32 @@ function train_stack(y, X,
 
     if accelerate
         stack = Stack(;
-                      metalearner=LR(),
+                      #                      metalearner=LR(),
+                      metalearner=RR(),
                       dtr=dtr,
                       rfr=rfr,
+                      edtr=edtr,
                       xgbr=xgbr,
                       knnr=knnr,
                       etr=etr,
                       lgbr=lgbr,
+                      nnr=nnr,
                       resampling=CV(nfolds=6, rng=rng),
                       acceleration=CPUThreads(),
                       cache=false,
                       )
     else
         stack = Stack(;
-                      metalearner=LR(),
+                      #                      metalearner=LR(),
+                      metalearner=RR(),
                       dtr=dtr,
                       rfr=rfr,
+                      edtr=edtr,
                       xgbr=xgbr,
                       knnr=knnr,
                       etr=etr,
                       lgbr=lgbr,
+                      nnr=nnr,
                       resampling=CV(nfolds=6, rng=rng),
                       cache=false,
                       )
