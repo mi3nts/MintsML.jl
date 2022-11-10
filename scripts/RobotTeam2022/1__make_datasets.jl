@@ -28,17 +28,18 @@ function make_datasets(datapath, outpath)
         # compute solar azimuth and elevation
         solar_geo = solar_azimuth_altitude.(X.utc_dt, X.ilat, X.ilon, X.altitude)
         az_el = hcat(collect.(solar_geo)...)'
-        X.solar_az = az_el[:, 1]
-        X.solar_el = az_el[:, 2]
+        X.solar_az .= az_el[:, 1]
+        X.solar_el .= az_el[:, 2]
 
         solar_geo = solar_azimuth_altitude.(Xtest.utc_dt, Xtest.ilat, Xtest.ilon, Xtest.altitude)
         az_el = hcat(collect.(solar_geo)...)'
-        Xtest.solar_az = az_el[:, 1]
-        Xtest.solar_el = az_el[:, 2]
+        Xtest.solar_az .= az_el[:, 1]
+        Xtest.solar_el .= az_el[:, 2]
 
         # drop off time, ilat, and ilon from X variables
         X = X[:, Not([:ilat, :ilon, :utc_dt])]
         Xtest = Xtest[:, Not([:ilat, :ilon, :utc_dt])]
+
 
 
         # now we want to save the data.
@@ -50,6 +51,7 @@ function make_datasets(datapath, outpath)
 
         CSV.write(joinpath(outpath_base, "Xtest.csv"), Xtest)
         CSV.write(joinpath(outpath_base, "ytest.csv"), DataFrame(Dict(target => ytest)))
+
 
     end
 end
@@ -66,19 +68,19 @@ function make_datasets_full(datapaths, outpath)
         (y, X), (ytest, Xtest) = makeFullDatasets(datapaths, target)
 
         # compute solar azimuth and elevation
-        # solar_geo = solar_azimuth_altitude.(X.utc_dt, X.ilat, X.ilon, X.altitude)
-        # az_el = hcat(collect.(solar_geo)...)'
-        # X.solar_az = az_el[:, 1]
-        # X.solar_el = az_el[:, 2]
+        solar_geo = solar_azimuth_altitude.(X.utc_dt, X.ilat, X.ilon, X.altitude)
+        az_el = hcat(collect.(solar_geo)...)'
+        X.solar_az = az_el[:, 1]
+        X.solar_el = az_el[:, 2]
 
-        # solar_geo = solar_azimuth_altitude.(Xtest.utc_dt, Xtest.ilat, Xtest.ilon, Xtest.altitude)
-        # az_el = hcat(collect.(solar_geo)...)'
-        # Xtest.solar_az = az_el[:, 1]
-        # Xtest.solar_el = az_el[:, 2]
+        solar_geo = solar_azimuth_altitude.(Xtest.utc_dt, Xtest.ilat, Xtest.ilon, Xtest.altitude)
+        az_el = hcat(collect.(solar_geo)...)'
+        Xtest.solar_az = az_el[:, 1]
+        Xtest.solar_el = az_el[:, 2]
 
-        # # drop off time, ilat, and ilon from X variables
-        # X = X[:, Not([:ilat, :ilon, :utc_dt])]
-        # Xtest = Xtest[:, Not([:ilat, :ilon, :utc_dt])]
+        # drop off time, ilat, and ilon from X variables
+        X = X[:, Not([:ilat, :ilon, :utc_dt])]
+        Xtest = Xtest[:, Not([:ilat, :ilon, :utc_dt])]
 
 
         # now we want to save the data.
@@ -105,6 +107,15 @@ ispath(datapath)
 make_datasets(datapath, outpath)
 make_datasets(datapath2, outpath)
 make_datasets(datapath3, outpath)
+
+
+# read in test dataset to make sure it worked
+# isfile(joinpath(outpath, "11-23", "CDOM", "X.csv"))
+# df = CSV.File(joinpath(outpath, "11-23", "CDOM", "X.csv")) |> DataFrame
+# names(df)
+
+
+
 
 # datapaths = [datapath, datapath2, datapath3]
 # outpath = joinpath(outpath, "Full")
