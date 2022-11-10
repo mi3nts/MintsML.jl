@@ -32,7 +32,7 @@ function makeDatasets(datapath::String, target::Symbol) #, p::Float64)
 #    yval, Xval= unpack(df_val, ==(target), col -> !(col ∈ ignored_for_input))
     ytest, Xtest = unpack(df_test, ==(target), col -> !(col ∈ ignored_for_input))
 
-    # if there's a third column in the targetsDict, set everything below it to 0.0
+    # if there's a third column in the targetsDict, set everything below it to 0.0, i.e. the threshold
     if length(targetsDict[target]) == 3
         ymin = targetsDict[target][3]
         y[y .< ymin] .= 0.0
