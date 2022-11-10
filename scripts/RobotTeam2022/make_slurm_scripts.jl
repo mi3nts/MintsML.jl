@@ -100,7 +100,7 @@ end
 
 make_slurm_jobs(;
                 script_to_run="8__evaluate_superlearners.jl",
-                basename="8_eval_",
+                basename="8_eval_11-23_",
                 n_tasks=4,
 		            datapath="/scratch/jwaczak/data/datasets/11-23",
 		            outpath="/scratch/jwaczak/data/analysis_full",
@@ -108,7 +108,7 @@ make_slurm_jobs(;
 
 make_slurm_jobs(;
                 script_to_run="8__evaluate_superlearners.jl",
-                basename="8_eval_",
+                basename="8_eval_12-09_",
                 n_tasks=4,
 		            datapath="/scratch/jwaczak/data/datasets/12-09",
 		            outpath="/scratch/jwaczak/data/analysis_full",
@@ -116,7 +116,7 @@ make_slurm_jobs(;
 
 make_slurm_jobs(;
                 script_to_run="8__evaluate_superlearners.jl",
-                basename="8_eval_",
+                basename="8_eval_12-10_",
                 n_tasks=4,
 		            datapath="/scratch/jwaczak/data/datasets/12-10",
 		            outpath="/scratch/jwaczak/data/analysis_full",
