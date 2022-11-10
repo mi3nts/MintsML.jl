@@ -120,8 +120,8 @@ function main()
     mpath = joinpath(path_to_use, "$(savename)__$(suffix).jls")
     mach = machine(mpath)
 
-    ŷ = MLJ.predict(mach, X)
-    ŷtest = MLJ.predict(mach, Xtest)
+    ŷ = MLJ.predict(mach, X̃)
+    ŷtest = MLJ.predict(mach, X̃test)
 
     p1 = scatterresult(y, ŷ,
                        ytest, ŷtest;
