@@ -554,7 +554,7 @@ function train_stack(y, X,
     # save the model
     MLJ.save(joinpath(path_to_use, "$(savename)__$(suffix).jls"), mach)
 
-    open(joinpath(path_to_use, "$(savename)__hpo.txt"), "w") do f
+    open(joinpath(path_to_use, "$(savename)__$(suffix).txt"), "w") do f
         println(f,"\n")
         println(f,"---------------------")
         println(f, "r² train: $(rsq(ŷ, y))\tr² test:$(rsq(ŷtest, ytest))\tRMSE test: $(rmse(ŷtest, ytest))\tMAE test: $(mae(ŷtest, ytest))")

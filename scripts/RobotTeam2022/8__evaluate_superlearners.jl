@@ -29,7 +29,7 @@ function parse_commandline()
         "--datapath", "-d"
             help = "Path to directory with data to be used in training"
             arg_type = String
-            default = "/media/john/HSDATA/datasets/Full"
+            default = "/media/john/HSDATA/datasets/11-23"
         "--outpath", "-o"
             help = "Path to directory for storing output"
             arg_type = String
@@ -63,13 +63,13 @@ function main()
     datapath = parsed_args[:datapath]
     outpath = parsed_args[:outpath]
 
+    date = split(datapath, "/")[end]
+
     target_name = String(target)
     target_long = targetsDict[target][2]
     units = targetsDict[target][1]
 
     # now that we've verified the cl args, move on with the script
-    println("Loading packages...")
-
     println("Setting random seed for reproducability...")
     rng = StableRNG(42)
 
@@ -80,7 +80,6 @@ function main()
     println("Setting compute resources...")
     # we should grab this from the envrionment variable for number of julia threads
     MLJ.default_resource(CPUThreads())
-
 
     println("Loading datasets...")
     data_path = joinpath(datapath, target_name)
@@ -98,15 +97,57 @@ function main()
     X̃test = Xtest[:, vcat(refs, others)]
 
 
-    train_stack(y, X̃,
-                ytest, X̃test,
-                target_name, units, target_long,
-                outpath;
-                accelerate = false,
-                )
+
+    # set up reading and outgoing paths
+    longname = "Superlearner Stack"
+    savename = "superlearner"
+    suffix = "stack"
 
 
+    println("Setting up save directories...")
+    outpathtarget = joinpath(outpath, target_name)
+    if !isdir(outpathtarget)
+        mkdir(outpathtarget)
+    end
 
+    outpath_stack = joinpath(outpathtarget, "superlearner_stack")
+    if !isdir(outpath_stack)
+        mkdir(outpath_stack)
+    end
+
+
+    path_to_use = outpath_stack
+    mpath = joinpath(path_to_use, "$(savename)__$(suffix).jls")
+    mach = machine(mpath)
+
+    ŷ = MLJ.predict(mach, X)
+    ŷtest = MLJ.predict(mach, Xtest)
+
+    p1 = scatterresult(y, ŷ,
+                       ytest, ŷtest;
+                       xlabel="True $(target_long) [$(units)]",
+                       ylabel="Predicted $(target_long) [$(units)]",
+                       plot_title="Fit for $(longname)",)
+
+    savefig(p1, joinpath(path_to_use, "scatterplt__$(date).png"))
+    savefig(p1, joinpath(path_to_use, "scatterplt__$(date).svg"))
+    savefig(p1, joinpath(path_to_use, "scatterplt__$(date).pdf"))
+
+    p2 = quantilequantile(y, ŷ,
+                          ytest, ŷtest;
+                          xlabel="True $(target_long) [$(units)]",
+                          ylabel="Predicted $(target_long) [$(units)]",
+                          title="Fit for $(longname)",)
+
+    savefig(p2, joinpath(path_to_use, "qq__$(date).png"))
+    savefig(p2, joinpath(path_to_use, "qq__$(date).svg"))
+    savefig(p2, joinpath(path_to_use, "qq__$(date).pdf"))
+
+    open(joinpath(path_to_use, "$(savename)__$(date).txt"), "w") do f
+        println(f,"\n")
+        println(f,"---------------------")
+        println(f, "r² train: $(rsq(ŷ, y))\tr² test:$(rsq(ŷtest, ytest))\tRMSE test: $(rmse(ŷtest, ytest))\tMAE test: $(mae(ŷtest, ytest))")
+    end
 end
 
 
