@@ -6,6 +6,14 @@ import KernelDensity
 
 
 
+function r²(y_pred, y_true)
+    ȳ = mean(y_true)
+    SS_res = sum((y_true .- y_pred).^2)
+    SS_tot = sum((y_true .- ȳ).^2)
+    return 1 - SS_res/(SS_tot + eps(eltype(y_pred)))
+end
+
+
 @userplot HistPDF
 
 @recipe function f(mpdf::HistPDF;)
