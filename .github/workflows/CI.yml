@@ -49,6 +49,6 @@ jobs:
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using mintsML
-            DocMeta.setdocmeta!(mintsML, :DocTestSetup, :(using mintsML); recursive=true)
-            doctest(mintsML)'
+            using MintsML
+            DocMeta.setdocmeta!(MintsML, :DocTestSetup, :(using MintsML); recursive=true)
+            doctest(MintsML)'

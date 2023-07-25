@@ -1,14 +1,14 @@
 ```@meta
-CurrentModule = mintsML
+CurrentModule = MintsML
 ```
 
-# mintsML
+# MintsML
 
-Documentation for [mintsML](https://github.com/mi3nts/mintsML.jl).
+Documentation for [MintsML](https://github.com/mi3nts/MintsML.jl).
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [mintsML]
+Modules = [MintsML]
 ```
