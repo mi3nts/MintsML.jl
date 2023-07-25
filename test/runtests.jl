@@ -1,4 +1,4 @@
-using mintsML
+using MintsML
 using Test
 
 @testset "mintsML.jl" begin
