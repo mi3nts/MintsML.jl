@@ -4,6 +4,7 @@ authors = ["John Waczak"]
 version = "0.1.0"
 
 [deps]
+RelocatableFolders = "05181044-ff0b-4ac5-8273-598c1e38db00"
 
 [compat]
 julia = "1.9"
